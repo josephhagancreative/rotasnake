@@ -33,7 +33,21 @@ func _ready():
 
 func spawn_snake():
 	snake_instance = snake_scene.instantiate()
-	snake_instance.position = snake_start_position
+	
+	# Look for SnakeStartPoint node first, otherwise use exported position
+	var start_point = find_child("SnakeStartPoint", true, false) as SnakeStartPoint
+	if start_point:
+		var start_pos = start_point.get_start_position()
+		var start_dir = start_point.get_facing_direction()
+		print("BaseLevel.spawn_snake() - Found SnakeStartPoint, pos: ", start_pos, ", dir: ", start_dir)
+		snake_instance.position = start_pos
+		snake_instance.set_initial_facing_direction(start_dir)
+	else:
+		print("BaseLevel.spawn_snake() - No SnakeStartPoint found, using defaults")
+		snake_instance.position = snake_start_position
+		# Default facing direction if no start point is set
+		snake_instance.set_initial_facing_direction(Vector2.RIGHT)
+	
 	add_child(snake_instance)
 	snake_instance.died.connect(_on_snake_died)
 

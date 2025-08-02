@@ -17,6 +17,7 @@ var current_state = State.ROTATING
 var facing_direction = Vector2.ZERO  # The direction the snake is visually facing
 var rotation_angle = 0.0
 var rotation_center = Vector2.ZERO
+var initial_setup_done = false  # Flag to prevent _ready from overriding custom setup
 
 # Rotation direction control
 var rotation_direction = 1.0  # 1.0 for clockwise, -1.0 for counter-clockwise
@@ -56,16 +57,18 @@ func _ready():
 	rotation_direction = 1.0  # Start clockwise
 	target_rotation_direction = 1.0
 	
-	# Set initial facing direction
-	facing_direction = Vector2(1, 0)  # Start facing right
-	
-	# Set initial rotation center based on default direction (clockwise rotation)
-	var perpendicular = Vector2(facing_direction.y, -facing_direction.x)
-	rotation_center = global_position + perpendicular * ROTATION_RADIUS
-	rotation_angle = atan2(global_position.y - rotation_center.y, global_position.x - rotation_center.x)
-	
-	# Set initial sprite rotation to face the starting direction
-	sprite.rotation = facing_direction.angle()
+	# Only do default setup if set_initial_facing_direction wasn't called
+	if not initial_setup_done:
+		# Set initial facing direction (can be overridden by set_initial_facing_direction)
+		facing_direction = Vector2(1, 0)  # Start facing right
+		
+		# Set initial rotation center based on default direction (clockwise rotation)
+		var perpendicular = Vector2(facing_direction.y, -facing_direction.x)
+		rotation_center = global_position + perpendicular * ROTATION_RADIUS
+		rotation_angle = atan2(global_position.y - rotation_center.y, global_position.x - rotation_center.x)
+		
+		# Set initial sprite rotation to face the starting direction
+		sprite.rotation = facing_direction.angle()
 	
 	
 	# Initialize position history with starting positions
@@ -152,6 +155,13 @@ func handle_rotation(delta):
 	var old_facing = facing_direction
 	facing_direction = tangent.normalized()
 	
+	# Log first few frames to see what's happening
+	if Engine.get_process_frames() < 100:
+		print("Snake.handle_rotation() - Frame ", Engine.get_process_frames())
+		print("  rotation_angle: ", rotation_angle)
+		print("  tangent: ", tangent)
+		print("  old_facing: ", old_facing)
+		print("  new facing_direction: ", facing_direction)
 	
 	# Make sprite face the tangent direction
 	sprite.rotation = facing_direction.angle()
@@ -401,3 +411,38 @@ func add_tail_segment():
 	tail_segments.append(segment)
 	get_parent().call_deferred("add_child", segment)
 	tail_length += 1
+
+func set_initial_facing_direction(direction: Vector2):
+	# Set the initial facing direction before _ready() completes
+	facing_direction = direction.normalized()
+	initial_setup_done = true  # Mark that we've done custom setup
+	print("Snake.set_initial_facing_direction() - Setting facing_direction to: ", facing_direction)
+	
+	# For the rotation to work correctly, we need to position the rotation center
+	# such that the current facing direction IS the tangent to the circle at this position
+	
+	# For clockwise rotation (rotation_direction = 1):
+	# - If facing right (1,0), center should be below (0,1) 
+	# - If facing up (0,-1), center should be to the right (1,0)
+	# - If facing left (-1,0), center should be above (0,-1)
+	# - If facing down (0,1), center should be to the left (-1,0)
+	
+	# The perpendicular that points toward the center (for clockwise rotation)
+	# For facing RIGHT (1,0), we want center BELOW, so perpendicular should be DOWN (0,1)
+	var perpendicular = Vector2(-facing_direction.y, facing_direction.x) * rotation_direction
+	rotation_center = global_position + perpendicular * ROTATION_RADIUS
+	rotation_angle = atan2(global_position.y - rotation_center.y, global_position.x - rotation_center.x)
+	
+	print("Snake.set_initial_facing_direction() - rotation_direction: ", rotation_direction)
+	print("Snake.set_initial_facing_direction() - perpendicular: ", perpendicular)
+	print("Snake.set_initial_facing_direction() - rotation_center: ", rotation_center)
+	print("Snake.set_initial_facing_direction() - rotation_angle: ", rotation_angle)
+	
+	# Verify the tangent calculation matches our facing direction
+	var expected_tangent = Vector2(-sin(rotation_angle), cos(rotation_angle)) * rotation_direction
+	print("Snake.set_initial_facing_direction() - expected_tangent: ", expected_tangent)
+	print("Snake.set_initial_facing_direction() - facing_direction: ", facing_direction)
+	
+	# Set initial sprite rotation to face the starting direction
+	if sprite:
+		sprite.rotation = facing_direction.angle()
