@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://dejplu76erf28"]
 
-[ext_resource type="Script" uid="uid://4jsv8laf47vj" path="res://Snake.gd" id="1"]
+[ext_resource type="Script" uid="uid://4jsv8laf47vj" path="res://snake.gd" id="1"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1"]
 radius = 16.0
@@ -12,14 +12,14 @@ radius = 12.0
 size = Vector2(32, 32)
 
 [node name="Snake" type="CharacterBody2D"]
-collision_mask = 4
+collision_mask = 12
 script = ExtResource("1")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_1")
 
 [node name="HeadArea" type="Area2D" parent="."]
-collision_mask = 12
+collision_mask = 44
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HeadArea"]
 shape = SubResource("CircleShape2D_2")
