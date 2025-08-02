@@ -18,6 +18,10 @@ var movement_direction = Vector2.ZERO
 var rotation_angle = 0.0
 var rotation_center = Vector2.ZERO
 
+# Input buffering for most recent input priority
+var input_queue = []
+var max_input_queue_size = 4
+
 # Tail management
 var tail_segments = []
 var position_history = []
@@ -34,14 +38,22 @@ signal died()
 var tail_segment_scene = preload("res://TailSegment.tscn")
 
 func _ready():
-	# Set initial rotation center
-	rotation_center = global_position
+	# Set initial movement direction for smooth rotation start
+	movement_direction = Vector2(1, 0)  # Start facing right
+	
+	# Set initial rotation center based on default direction (clockwise rotation)
+	var perpendicular = Vector2(movement_direction.y, -movement_direction.x)
+	rotation_center = global_position + perpendicular * ROTATION_RADIUS
+	rotation_angle = atan2(global_position.y - rotation_center.y, global_position.x - rotation_center.x)
+	
+	# Set initial sprite rotation to face the starting direction
+	sprite.rotation = movement_direction.angle()
 	
 	# Initialize position history with starting positions
 	for i in range(POSITION_HISTORY_SIZE):
 		position_history.append({
 			"position": global_position,
-			"rotation": 0.0
+			"rotation": movement_direction.angle()
 		})
 	
 	# Create initial tail segments
@@ -71,6 +83,11 @@ func handle_movement(delta):
 	velocity = movement_direction * MOVE_SPEED
 	move_and_slide()
 	
+	# Check for wall collisions
+	if is_on_wall():
+		die()
+		return
+	
 	# Update sprite rotation to face movement direction
 	if movement_direction.length() > 0:
 		sprite.rotation = movement_direction.angle()
@@ -85,31 +102,96 @@ func handle_rotation(delta):
 		sin(rotation_angle) * ROTATION_RADIUS
 	)
 	
+	# Store old position for collision check
+	var old_position = global_position
 	global_position = rotation_center + offset
+	
+	# Check for collisions using move_and_collide with zero vector
+	var collision = move_and_collide(Vector2.ZERO, true)
+	if collision:
+		global_position = old_position  # Restore position
+		die()
+		return
 	
 	# Make sprite face the direction of rotation
 	sprite.rotation = rotation_angle + PI/2
 
-func check_input():
-	var input_vector = Vector2.ZERO
+func _input(event):
+	# Track individual key presses for input priority
+	if event.is_action_pressed("ui_up"):
+		add_to_input_queue("ui_up")
+	elif event.is_action_pressed("ui_down"):
+		add_to_input_queue("ui_down")
+	elif event.is_action_pressed("ui_left"):
+		add_to_input_queue("ui_left")
+	elif event.is_action_pressed("ui_right"):
+		add_to_input_queue("ui_right")
 	
-	# Get input
-	input_vector.x = Input.get_axis("ui_left", "ui_right")
-	input_vector.y = Input.get_axis("ui_up", "ui_down")
+	# Remove released keys from queue
+	if event.is_action_released("ui_up"):
+		remove_from_input_queue("ui_up")
+	elif event.is_action_released("ui_down"):
+		remove_from_input_queue("ui_down")
+	elif event.is_action_released("ui_left"):
+		remove_from_input_queue("ui_left")
+	elif event.is_action_released("ui_right"):
+		remove_from_input_queue("ui_right")
+
+func add_to_input_queue(action: String):
+	# Remove if already in queue (move to front)
+	input_queue.erase(action)
+	# Add to front (most recent)
+	input_queue.push_front(action)
+	# Limit queue size
+	if input_queue.size() > max_input_queue_size:
+		input_queue.pop_back()
+
+func remove_from_input_queue(action: String):
+	input_queue.erase(action)
+
+func get_priority_input_vector() -> Vector2:
+	# Return direction of most recent input that's still held
+	for action in input_queue:
+		if Input.is_action_pressed(action):
+			match action:
+				"ui_up":
+					return Vector2(0, -1)
+				"ui_down":
+					return Vector2(0, 1)
+				"ui_left":
+					return Vector2(-1, 0)
+				"ui_right":
+					return Vector2(1, 0)
+	return Vector2.ZERO
+
+func check_input():
+	# Use priority-based input instead of axis input
+	var input_vector = get_priority_input_vector()
 	
 	# If there's input and we're rotating, switch to moving
 	if input_vector.length() > 0 and current_state == State.ROTATING:
 		current_state = State.MOVING
-		movement_direction = input_vector.normalized()
-		# Smooth transition: adjust rotation angle to match movement direction
+		movement_direction = input_vector
+		
+		# Smooth transition: maintain current rotation angle for sprite consistency
+		# The sprite rotation will be updated in handle_movement()
 		rotation_angle = movement_direction.angle()
 	
 	# If no input and we're moving, switch to rotating
 	elif input_vector.length() == 0 and current_state == State.MOVING:
 		current_state = State.ROTATING
-		rotation_center = global_position
-		# Set rotation angle based on last movement direction
+		
+		# Start rotation from the movement direction angle
+		# Up = -PI/2, Right = 0, Down = PI/2, Left = PI
 		rotation_angle = movement_direction.angle()
+		
+		# Calculate rotation center so that current position is on the circle at the movement angle
+		rotation_center = global_position - Vector2(cos(rotation_angle), sin(rotation_angle)) * ROTATION_RADIUS
+	
+	# Update movement direction while moving (for direction changes)
+	elif input_vector.length() > 0 and current_state == State.MOVING:
+		if movement_direction != input_vector:
+			movement_direction = input_vector
 
 func get_current_state():
 	return current_state
@@ -120,11 +202,19 @@ func die():
 	died.emit()
 	set_physics_process(false)  # Stop movement
 	
-	# Visual feedback
+	# Enhanced visual feedback
 	modulate = Color(1, 0.3, 0.3, 1.0)
 	
-	# Clean up tail
+	# Add death animation
+	var tween = create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(self, "modulate", Color(1, 0, 0, 0.5), 0.5)
+	tween.tween_property(self, "scale", Vector2(1.2, 1.2), 0.3)
+	tween.tween_property(self, "rotation", PI/4, 0.5)
+	
+	# Clean up tail with delay
 	for segment in tail_segments:
+		segment.modulate = Color(1, 0.3, 0.3, 1.0)
 		segment.queue_free()
 
 # New tail-related functions
