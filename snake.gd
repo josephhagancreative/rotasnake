@@ -2,9 +2,9 @@ extends CharacterBody2D
 class_name Snake
 
 # Movement constants
-const MOVE_SPEED = 200.0
-const ROTATION_SPEED = 1.5  # Radians per second (about 86 degrees/sec)
+const ROTATION_SPEED = 2.0  # Radians per second (about 115 degrees/sec)
 const ROTATION_RADIUS = 50.0  # Distance from center when rotating
+const MOVE_SPEED = ROTATION_SPEED * ROTATION_RADIUS  # Match tangential speed of rotation (100px/s)
 
 # Tail constants
 const SEGMENT_DISTANCE = 25.0  # Distance between segments
@@ -12,11 +12,17 @@ const POSITION_HISTORY_SIZE = 300  # How many positions to remember
 const HISTORY_RECORD_INTERVAL = 0.02  # How often to record position (seconds)
 
 # State management
-enum State { MOVING, ROTATING }
+enum State { MOVING, ROTATING, TRANSITIONING }
 var current_state = State.ROTATING
-var movement_direction = Vector2.ZERO
+var facing_direction = Vector2.ZERO  # The direction the snake is visually facing
 var rotation_angle = 0.0
 var rotation_center = Vector2.ZERO
+
+# Rotation direction control
+var rotation_direction = 1.0  # 1.0 for clockwise, -1.0 for counter-clockwise
+var target_rotation_direction = 1.0  # The direction we're transitioning to
+var transition_timer = 0.0
+var transition_duration = 0.1  # 0.1 second to transition between directions (nearly instant)
 
 # Input buffering for most recent input priority
 var input_queue = []
@@ -46,22 +52,27 @@ func _ready():
 	# Initialize immunity timer
 	immunity_timer = collision_immunity_time
 	
-	# Set initial movement direction for smooth rotation start
-	movement_direction = Vector2(1, 0)  # Start facing right
+	# Initialize rotation direction variables
+	rotation_direction = 1.0  # Start clockwise
+	target_rotation_direction = 1.0
+	
+	# Set initial facing direction
+	facing_direction = Vector2(1, 0)  # Start facing right
 	
 	# Set initial rotation center based on default direction (clockwise rotation)
-	var perpendicular = Vector2(movement_direction.y, -movement_direction.x)
+	var perpendicular = Vector2(facing_direction.y, -facing_direction.x)
 	rotation_center = global_position + perpendicular * ROTATION_RADIUS
 	rotation_angle = atan2(global_position.y - rotation_center.y, global_position.x - rotation_center.x)
 	
 	# Set initial sprite rotation to face the starting direction
-	sprite.rotation = movement_direction.angle()
+	sprite.rotation = facing_direction.angle()
+	
 	
 	# Initialize position history with starting positions
 	for i in range(POSITION_HISTORY_SIZE):
 		position_history.append({
 			"position": global_position,
-			"rotation": movement_direction.angle()
+			"rotation": facing_direction.angle()
 		})
 	
 	# Create initial tail segments
@@ -93,6 +104,8 @@ func _physics_process(delta):
 			handle_movement(delta)
 		State.ROTATING:
 			handle_rotation(delta)
+		State.TRANSITIONING:
+			handle_transition(delta)
 	
 	# Update tail positions
 	update_tail_positions()
@@ -101,8 +114,8 @@ func _physics_process(delta):
 	check_input()
 
 func handle_movement(delta):
-	# Move in the current direction
-	velocity = movement_direction * MOVE_SPEED
+	# Move in the current facing direction (keep facing_direction UNCHANGED during movement)
+	velocity = facing_direction * MOVE_SPEED
 	move_and_slide()
 	
 	# Check for wall collisions
@@ -110,13 +123,12 @@ func handle_movement(delta):
 		die()
 		return
 	
-	# Update sprite rotation to face movement direction
-	if movement_direction.length() > 0:
-		sprite.rotation = movement_direction.angle()
+	# Keep sprite rotation consistent with facing direction (don't change facing_direction)
+	sprite.rotation = facing_direction.angle()
 
 func handle_rotation(delta):
-	# Rotate around the center point
-	rotation_angle += ROTATION_SPEED * delta
+	# Rotate around the center point using current rotation direction
+	rotation_angle += ROTATION_SPEED * rotation_direction * delta
 	
 	# Calculate new position on the circle
 	var offset = Vector2(
@@ -135,25 +147,76 @@ func handle_rotation(delta):
 		die()
 		return
 	
-	# Make sprite face the direction of rotation
-	sprite.rotation = rotation_angle + PI/2
+	# Calculate the tangent direction (direction of movement on the circle)
+	var tangent = Vector2(-sin(rotation_angle), cos(rotation_angle)) * rotation_direction
+	var old_facing = facing_direction
+	facing_direction = tangent.normalized()
+	
+	
+	# Make sprite face the tangent direction
+	sprite.rotation = facing_direction.angle()
+
+func handle_transition(delta):
+	# Update transition timer
+	transition_timer += delta
+	
+	# Calculate transition progress (0.0 to 1.0)
+	var progress = transition_timer / transition_duration
+	
+	
+	# Move forward in the current facing direction
+	velocity = facing_direction * MOVE_SPEED
+	move_and_slide()
+	
+	# Check for wall collisions
+	if is_on_wall():
+		die()
+		return
+	
+	# Keep sprite facing the current direction (don't change during transition)
+	sprite.rotation = facing_direction.angle()
+	
+	# Check if transition is complete
+	if progress >= 1.0:
+		# Complete the transition
+		rotation_direction = target_rotation_direction
+		current_state = State.ROTATING
+		
+		# Set up new rotation center from current position using current facing direction
+		var perpendicular_to_facing = Vector2(-facing_direction.y, facing_direction.x) * rotation_direction
+		rotation_center = global_position + perpendicular_to_facing * ROTATION_RADIUS
+		rotation_angle = atan2(global_position.y - rotation_center.y, global_position.x - rotation_center.x)
 
 func _input(event):
-	# Track individual key presses for input priority
-	if event.is_action_pressed("ui_up"):
-		add_to_input_queue("ui_up")
-	elif event.is_action_pressed("ui_down"):
-		add_to_input_queue("ui_down")
-	elif event.is_action_pressed("ui_left"):
+	# Left key: set rotation to counter-clockwise
+	if event.is_action_pressed("ui_left"):
+		if target_rotation_direction != -1.0:  # Only transition if direction changed
+			# Only start transition if we're in ROTATING state
+			if current_state == State.ROTATING:
+				start_rotation_transition(-1.0)
+			else:
+				# If we're moving, just set the target direction for later
+				target_rotation_direction = -1.0
 		add_to_input_queue("ui_left")
+	
+	# Right key: set rotation to clockwise
 	elif event.is_action_pressed("ui_right"):
+		if target_rotation_direction != 1.0:  # Only transition if direction changed
+			# Only start transition if we're in ROTATING state
+			if current_state == State.ROTATING:
+				start_rotation_transition(1.0)
+			else:
+				# If we're moving, just set the target direction for later
+				target_rotation_direction = 1.0
 		add_to_input_queue("ui_right")
+	
+	# Forward key (up): move forward in current facing direction
+	elif event.is_action_pressed("ui_up"):
+		add_to_input_queue("ui_up")
 	
 	# Remove released keys from queue
 	if event.is_action_released("ui_up"):
 		remove_from_input_queue("ui_up")
-	elif event.is_action_released("ui_down"):
-		remove_from_input_queue("ui_down")
 	elif event.is_action_released("ui_left"):
 		remove_from_input_queue("ui_left")
 	elif event.is_action_released("ui_right"):
@@ -171,49 +234,76 @@ func add_to_input_queue(action: String):
 func remove_from_input_queue(action: String):
 	input_queue.erase(action)
 
-func get_priority_input_vector() -> Vector2:
-	# Return direction of most recent input that's still held
+func start_rotation_transition(new_direction: float):
+	# Start a smooth transition to a new rotation direction
+	# Only transition if we're actually changing direction
+	if new_direction == rotation_direction:
+		return
+	
+	target_rotation_direction = new_direction
+	transition_timer = 0.0
+	current_state = State.TRANSITIONING
+
+func recalculate_rotation_center():
+	# When changing rotation direction, calculate new rotation center from current position
+	# The current facing direction becomes the tangent to the new circle
+	var current_facing = facing_direction.normalized()
+	
+	# Calculate perpendicular direction for the new rotation center
+	# For clockwise rotation (positive), center is to the right of facing direction
+	# For counter-clockwise rotation (negative), center is to the left of facing direction
+	var perpendicular = Vector2(-current_facing.y, current_facing.x) * rotation_direction
+	
+	# Set new rotation center
+	rotation_center = global_position + perpendicular * ROTATION_RADIUS
+	
+	# Update rotation angle to match current position on new circle
+	rotation_angle = atan2(global_position.y - rotation_center.y, global_position.x - rotation_center.x)
+
+func get_priority_input_action() -> String:
+	# Return most recent input that's still held
 	for action in input_queue:
 		if Input.is_action_pressed(action):
-			match action:
-				"ui_up":
-					return Vector2(0, -1)
-				"ui_down":
-					return Vector2(0, 1)
-				"ui_left":
-					return Vector2(-1, 0)
-				"ui_right":
-					return Vector2(1, 0)
-	return Vector2.ZERO
+			return action
+	return ""
 
 func check_input():
-	# Use priority-based input instead of axis input
-	var input_vector = get_priority_input_vector()
+	# Get the current priority input
+	var current_input = get_priority_input_action()
 	
-	# If there's input and we're rotating, switch to moving
-	if input_vector.length() > 0 and current_state == State.ROTATING:
-		current_state = State.MOVING
-		movement_direction = input_vector
-		
-		# Smooth transition: maintain current rotation angle for sprite consistency
-		# The sprite rotation will be updated in handle_movement()
-		rotation_angle = movement_direction.angle()
+	# Forward key (up): switch to moving state
+	if current_input == "ui_up":
+		if current_state == State.ROTATING:
+			# Switch to moving in the direction we're currently facing
+			current_state = State.MOVING
+		elif current_state == State.TRANSITIONING:
+			# Switch to moving state to pause transition
+			current_state = State.MOVING
 	
-	# If no input and we're moving, switch to rotating
-	elif input_vector.length() == 0 and current_state == State.MOVING:
-		current_state = State.ROTATING
-		
-		# Start rotation from the movement direction angle
-		# Up = -PI/2, Right = 0, Down = PI/2, Left = PI
-		rotation_angle = movement_direction.angle()
-		
-		# Calculate rotation center so that current position is on the circle at the movement angle
-		rotation_center = global_position - Vector2(cos(rotation_angle), sin(rotation_angle)) * ROTATION_RADIUS
+	# Left/Right keys: handle rotation direction changes
+	elif current_input == "ui_left" or current_input == "ui_right":
+		# Don't switch to rotating if we're moving forward - just set the rotation direction
+		# This allows changing rotation direction while moving without affecting current movement
+		pass  # Rotation direction is already handled in _input()
 	
-	# Update movement direction while moving (for direction changes)
-	elif input_vector.length() > 0 and current_state == State.MOVING:
-		if movement_direction != input_vector:
-			movement_direction = input_vector
+	# No input: switch to rotating state from moving
+	elif current_input == "":
+		if current_state == State.MOVING:
+			# Switch to rotating state, use target rotation direction if it was changed while moving
+			rotation_direction = target_rotation_direction
+			current_state = State.ROTATING
+			
+			# COMPLETELY FRESH rotation setup - ignore any previous rotation_angle
+			# The facing direction should remain exactly as it was during movement
+			# Calculate where the rotation center should be so that we continue smoothly
+			var perpendicular = Vector2(-facing_direction.y, facing_direction.x) * rotation_direction
+			rotation_center = global_position + perpendicular * ROTATION_RADIUS
+			
+			# Calculate the angle for this position on the new circle
+			rotation_angle = atan2(global_position.y - rotation_center.y, global_position.x - rotation_center.x)
+			
+		
+		# If rotating or transitioning, continue in current state
 
 func get_current_state():
 	return current_state
@@ -267,7 +357,7 @@ func update_position_history(delta):
 		# Add new position to front
 		position_history.push_front({
 			"position": global_position,
-			"rotation": sprite.rotation
+			"rotation": facing_direction.angle()
 		})
 		
 		# Remove old positions if we exceed the limit
