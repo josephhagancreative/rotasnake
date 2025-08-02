@@ -4,10 +4,10 @@ class_name Snake
 # Movement constants
 const ROTATION_SPEED = 2.0  # Radians per second (about 115 degrees/sec)
 const ROTATION_RADIUS = 50.0  # Distance from center when rotating
-const MOVE_SPEED = ROTATION_SPEED * ROTATION_RADIUS  # Match tangential speed of rotation (100px/s)
+const MOVE_SPEED = ROTATION_SPEED * ROTATION_RADIUS * 1.25  # Match tangential speed of rotation, increased by 25% (125px/s)
 
 # Tail constants
-const SEGMENT_DISTANCE = 25.0  # Distance between segments
+const SEGMENT_DISTANCE = 18.0  # Distance between segments
 const POSITION_HISTORY_SIZE = 300  # How many positions to remember
 const HISTORY_RECORD_INTERVAL = 0.02  # How often to record position (seconds)
 
@@ -32,7 +32,7 @@ var max_input_queue_size = 4
 var tail_segments = []
 var position_history = []
 var history_timer = 0.0
-var tail_length = 12  # Start with 12 segments to reduce gaps
+var tail_length = 10  # Start with 10 segments for shorter snake
 
 # Self-collision immunity
 var collision_immunity_time = 2.0  # 2 seconds of immunity at start
