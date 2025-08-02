@@ -26,7 +26,12 @@ var max_input_queue_size = 4
 var tail_segments = []
 var position_history = []
 var history_timer = 0.0
-var tail_length = 5  # Start with 5 segments
+var tail_length = 12  # Start with 12 segments to reduce gaps
+
+# Self-collision immunity
+var collision_immunity_time = 2.0  # 2 seconds of immunity at start
+var immunity_timer = 0.0
+var min_tail_segment_distance = 3  # Ignore first 3 tail segments
 
 # Visual
 @onready var sprite = $Sprite2D
@@ -38,6 +43,9 @@ signal died()
 var tail_segment_scene = preload("res://TailSegment.tscn")
 
 func _ready():
+	# Initialize immunity timer
+	immunity_timer = collision_immunity_time
+	
 	# Set initial movement direction for smooth rotation start
 	movement_direction = Vector2(1, 0)  # Start facing right
 	
@@ -60,9 +68,23 @@ func _ready():
 	create_tail_segments()
 	
 	# Connect head area for self-collision detection
+	# Configure HeadArea collision - it should be on layer 1 and detect layer 2 (tail segments)
+	head_area.collision_layer = 1  # 2^0 = layer 1 (snake_head)
+	head_area.collision_mask = 2   # 2^1 = detect layer 2 (snake_tail)
+	
+	# Set head collision shape to normal size for solid body
+	var head_collision = head_area.get_child(0) as CollisionShape2D
+	if head_collision and head_collision.shape is CircleShape2D:
+		var head_shape = head_collision.shape as CircleShape2D
+		head_shape.radius = 12.0  # Back to normal size for solid collision
+	
 	head_area.area_entered.connect(_on_head_area_entered)
 
 func _physics_process(delta):
+	# Update immunity timer
+	if immunity_timer > 0:
+		immunity_timer -= delta
+	
 	# Record position history
 	update_position_history(delta)
 	
@@ -198,7 +220,6 @@ func get_current_state():
 
 func die():
 	# Called when snake hits something
-	print("Snake died!")
 	died.emit()
 	set_physics_process(false)  # Stop movement
 	
@@ -221,6 +242,19 @@ func die():
 func create_tail_segments():
 	for i in range(tail_length):
 		var segment = tail_segment_scene.instantiate()
+		
+		# Set collision layer for tail segments (layer 2: snake_tail)
+		segment.collision_layer = 2  # 2^1 = layer 2
+		segment.collision_mask = 0   # Don't detect anything
+		
+		# Set tail collision shape to be smaller than head (circular)
+		var tail_collision = segment.get_child(0) as CollisionShape2D
+		if tail_collision:
+			# Create a circular collision shape for body segments
+			var circle_shape = CircleShape2D.new()
+			circle_shape.radius = 10.0  # Smaller than head (12px)
+			tail_collision.shape = circle_shape
+		
 		tail_segments.append(segment)
 		get_parent().call_deferred("add_child", segment)
 
@@ -252,10 +286,24 @@ func update_tail_positions():
 				segment.set_segment_position(hist_data.position)
 				segment.set_segment_rotation(hist_data.rotation)
 
+func check_self_collision_overlap(tail_area: Area2D):
+	die()
+
 func _on_head_area_entered(area):
+	# Check immunity period
+	if immunity_timer > 0:
+		return
+	
 	# Check if we hit our own tail
 	if area in tail_segments:
-		die()
+		# Find which segment this is
+		var segment_index = tail_segments.find(area)
+		
+		# Ignore collisions with nearby segments (first few segments)
+		if segment_index < min_tail_segment_distance:
+			return
+		
+		check_self_collision_overlap(area)
 
 func add_tail_segment():
 	# Called when collecting items

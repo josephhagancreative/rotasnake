@@ -50,20 +50,6 @@ func create_obstacles():
 	obstacle2.move_distance = 300  # Creates 150x150 square around goal with 25px clearance
 	obstacle2.move_speed = 60
 	add_child(obstacle2)
-	
-	# Debug: Log goal and obstacle positions
-	print("=== LEVEL 3 DEBUG ===")
-	print("Goal position: ", goal.position)
-	print("Goal bounds: ", goal.position - Vector2(20, 20), " to ", goal.position + Vector2(20, 20))
-	print("Goal + 25px clearance zone: ", goal.position - Vector2(45, 45), " to ", goal.position + Vector2(45, 45))
-	print("Obstacle2 start: ", obstacle2.position)
-	print("Obstacle2 move_distance: ", obstacle2.move_distance, " (half_dist: ", obstacle2.move_distance * 0.5, ")")
-	var half_dist = obstacle2.move_distance * 0.5
-	print("Square corners will be:")
-	print("  1: ", obstacle2.position)
-	print("  2: ", obstacle2.position + Vector2(half_dist, 0))
-	print("  3: ", obstacle2.position + Vector2(half_dist, half_dist))
-	print("  4: ", obstacle2.position + Vector2(0, half_dist))
 
 func create_wall_line(start: Vector2, end: Vector2):
 	var line = Line2D.new()
