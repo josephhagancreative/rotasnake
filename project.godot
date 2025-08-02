@@ -81,4 +81,4 @@ ui_down={
 
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
-environment/defaults/default_clear_color=Color(0.1, 0.15, 0.2, 1.0)
+environment/defaults/default_clear_color=Color(0.1, 0.15, 0.2, 1)

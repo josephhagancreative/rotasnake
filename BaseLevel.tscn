@@ -1,6 +1,6 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=4 format=3 uid="uid://3qrl1u48x8q"]
 
-[ext_resource type="Script" path="res://BaseLevel.gd" id="1"]
+[ext_resource type="Script" uid="uid://cbp0251bhf1bp" path="res://BaseLevel.gd" id="1"]
 [ext_resource type="PackedScene" path="res://Goal.tscn" id="2"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_1"]
