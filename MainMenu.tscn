@@ -1,6 +1,52 @@
-[gd_scene load_steps=2 format=3 uid="uid://b8ejn8l5cjg7f"]
+[gd_scene load_steps=8 format=3 uid="uid://b8ejn8l5cjg7f"]
 
 [ext_resource type="Script" path="res://MainMenu.gd" id="1_3s4e8"]
+[ext_resource type="FontFile" uid="uid://dablhvfs76yft" path="res://assets/fonts/Jersey15-Regular.ttf" id="2_jersey_font"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_1"]
+font = ExtResource("2_jersey_font")
+font_size = 48
+font_color = Color(1, 1, 1, 1)
+shadow_color = Color(0, 0, 0, 1)
+shadow_offset = Vector2(2, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1"]
+bg_color = Color(0.2, 0.3, 0.4, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5, 0.7, 0.9, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2"]
+bg_color = Color(0.3, 0.4, 0.5, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7, 0.8, 0.9, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3"]
+bg_color = Color(0.4, 0.5, 0.6, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.8, 0.9, 1.0, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -30,9 +76,8 @@ offset_bottom = 100.0
 
 [node name="TitleLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
-theme_override_font_sizes/font_size = 48
 text = "ROTASNAKE"
+label_settings = SubResource("LabelSettings_1")
 horizontal_alignment = 1
 
 [node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
@@ -41,10 +86,30 @@ theme_override_constants/separation = 40
 
 [node name="NewGameButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_jersey_font")
 theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_styles/normal = SubResource("StyleBoxFlat_1")
+theme_override_styles/hover = SubResource("StyleBoxFlat_2")
+theme_override_styles/focus = SubResource("StyleBoxFlat_3")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_2")
+flat = true
 text = "Play Game"
 
 [node name="QuitButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_jersey_font")
 theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_styles/normal = SubResource("StyleBoxFlat_1")
+theme_override_styles/hover = SubResource("StyleBoxFlat_2")
+theme_override_styles/focus = SubResource("StyleBoxFlat_3")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_2")
+flat = true
 text = "Quit"
