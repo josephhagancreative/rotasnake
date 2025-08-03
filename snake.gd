@@ -1,5 +1,5 @@
 extends CharacterBody2D
-class_name Snake
+# class_name Snake  # Temporarily commented out due to global class conflict
 
 # Movement constants
 const ROTATION_SPEED = 2.0  # Radians per second (about 115 degrees/sec)
@@ -50,6 +50,9 @@ var tail_segment_scene = preload("res://TailSegment.tscn")
 var death_tween: Tween
 
 func _ready():
+	# Add to snake group for collision detection
+	add_to_group("snake")
+	
 	# Initialize immunity timer
 	immunity_timer = collision_immunity_time
 	

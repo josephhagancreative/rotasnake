@@ -1,0 +1,51 @@
+[gd_scene load_steps=3 format=3 uid="uid://cy8mqx2n7t4hv"]
+
+[ext_resource type="Script" uid="uid://fs686lut1sn0" path="res://CollectiblesUI.gd" id="1_2xk8v"]
+[ext_resource type="Texture2D" uid="uid://cjvoybghqhv6r" path="res://assets/sprites/apple-sprite.png" id="2_5jndo"]
+
+[node name="CollectiblesUI" type="Control"]
+layout_mode = 3
+anchors_preset = 2
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 0.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = -50.0
+offset_right = 110.0
+offset_bottom = -10.0
+grow_horizontal = 0
+grow_vertical = 0
+size_flags_horizontal = 0
+size_flags_vertical = 8
+script = ExtResource("1_2xk8v")
+
+[node name="CollectibleIcon1" type="TextureRect" parent="."]
+layout_mode = 1
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 26.0
+offset_bottom = 26.0
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_5jndo")
+expand_mode = 5
+
+[node name="CollectibleIcon2" type="TextureRect" parent="."]
+layout_mode = 1
+offset_left = 36.0
+offset_top = 10.0
+offset_right = 52.0
+offset_bottom = 26.0
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_5jndo")
+expand_mode = 5
+
+[node name="CollectibleIcon3" type="TextureRect" parent="."]
+layout_mode = 1
+offset_left = 62.0
+offset_top = 10.0
+offset_right = 78.0
+offset_bottom = 26.0
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_5jndo")
+expand_mode = 5

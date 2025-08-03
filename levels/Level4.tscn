@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://c3vxxtswvbgc8"]
+[gd_scene load_steps=6 format=3 uid="uid://c3vxxtswvbgc8"]
 
 [ext_resource type="Script" uid="uid://c3rqdqtk7ydbb" path="res://levels/Level4.gd" id="1_level4"]
 [ext_resource type="PackedScene" uid="uid://3qrl1u48x8q" path="res://BaseLevel.tscn" id="2_baselevel"]
 [ext_resource type="PackedScene" uid="uid://b6y5xqr7yvekl" path="res://SnakeStartPoint.tscn" id="3_snakestartpoint"]
 [ext_resource type="PackedScene" uid="uid://c4tvoxwo214xv" path="res://LevelWall.tscn" id="4_levelwall"]
+[ext_resource type="PackedScene" uid="uid://bxkqr8n4xphqe" path="res://Collectible.tscn" id="5_collectible"]
 
 [node name="Level4" instance=ExtResource("2_baselevel")]
 script = ExtResource("1_level4")
@@ -105,9 +106,18 @@ position = Vector2(325, 250)
 wall_length = 50.0
 
 [node name="TightSpot" parent="." index="22" instance=ExtResource("4_levelwall")]
-position = Vector2(525, 300)
+position = Vector2(499, 290)
 wall_length = 50.0
 
 [node name="GoalObstacle" parent="." index="23" instance=ExtResource("4_levelwall")]
 position = Vector2(725, 200)
 wall_length = 50.0
+
+[node name="Collectible1" parent="." index="24" instance=ExtResource("5_collectible")]
+position = Vector2(884, 123)
+
+[node name="Collectible2" parent="." index="25" instance=ExtResource("5_collectible")]
+position = Vector2(707, 375)
+
+[node name="Collectible3" parent="." index="26" instance=ExtResource("5_collectible")]
+position = Vector2(501, 226)

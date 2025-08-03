@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://bsi7hda8bin28"]
+[gd_scene load_steps=6 format=3 uid="uid://bsi7hda8bin28"]
 
 [ext_resource type="Script" uid="uid://c5446agrrb1ao" path="res://levels/Level6.gd" id="1_level6"]
 [ext_resource type="PackedScene" uid="uid://3qrl1u48x8q" path="res://BaseLevel.tscn" id="2_baselevel"]
 [ext_resource type="PackedScene" uid="uid://b6y5xqr7yvekl" path="res://SnakeStartPoint.tscn" id="3_snakestartpoint"]
 [ext_resource type="PackedScene" uid="uid://c4tvoxwo214xv" path="res://LevelWall.tscn" id="4_levelwall"]
+[ext_resource type="PackedScene" uid="uid://bxkqr8n4xphqe" path="res://Collectible.tscn" id="5_collectible"]
 
 [node name="Level6" instance=ExtResource("2_baselevel")]
 script = ExtResource("1_level6")
@@ -108,3 +109,12 @@ wall_rotation = 180.0
 [node name="SpiralEntry" parent="." index="21" instance=ExtResource("4_levelwall")]
 position = Vector2(509, 156)
 wall_length = 700.0
+
+[node name="Collectible1" parent="." index="22" instance=ExtResource("5_collectible")]
+position = Vector2(402, 258)
+
+[node name="Collectible2" parent="." index="23" instance=ExtResource("5_collectible")]
+position = Vector2(128, 134)
+
+[node name="Collectible3" parent="." index="24" instance=ExtResource("5_collectible")]
+position = Vector2(133, 306)

@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://m4qr7couoihj"]
+[gd_scene load_steps=7 format=3 uid="uid://m4qr7couoihj"]
 
 [ext_resource type="Script" uid="uid://c08ar8edbyhfg" path="res://levels/Level7.gd" id="1_level7"]
 [ext_resource type="PackedScene" uid="uid://3qrl1u48x8q" path="res://BaseLevel.tscn" id="2_baselevel"]
 [ext_resource type="PackedScene" uid="uid://b6y5xqr7yvekl" path="res://SnakeStartPoint.tscn" id="3_snakestartpoint"]
 [ext_resource type="PackedScene" uid="uid://c4tvoxwo214xv" path="res://LevelWall.tscn" id="4_levelwall"]
 [ext_resource type="PackedScene" uid="uid://c4tvoxwo214xw" path="res://MovingObstaclePlacement.tscn" id="5_obstacleplace"]
+[ext_resource type="PackedScene" uid="uid://bxkqr8n4xphqe" path="res://Collectible.tscn" id="6_collectible"]
 
 [node name="Level7" instance=ExtResource("2_baselevel")]
 script = ExtResource("1_level7")
@@ -41,21 +42,21 @@ wall_length = 500.0
 wall_rotation = 90.0
 
 [node name="CorridorTop" parent="." index="9" instance=ExtResource("4_levelwall")]
-position = Vector2(500, 150)
-wall_length = 600.0
+position = Vector2(530, 150)
+wall_length = 550.0
 
 [node name="CorridorBottom" parent="." index="10" instance=ExtResource("4_levelwall")]
-position = Vector2(500, 450)
-wall_length = 600.0
+position = Vector2(604, 445)
+wall_length = 400.0
 
 [node name="EntranceTop" parent="." index="11" instance=ExtResource("4_levelwall")]
-position = Vector2(202, 130)
+position = Vector2(248, 130)
 rotation = 1.5708
 wall_length = 150.0
 wall_rotation = 90.0
 
 [node name="EntranceBottom" parent="." index="12" instance=ExtResource("4_levelwall")]
-position = Vector2(200, 471)
+position = Vector2(248, 471)
 rotation = 1.5708
 wall_length = 150.0
 wall_rotation = 90.0
@@ -66,58 +67,76 @@ rotation = 1.5708
 wall_length = 50.0
 wall_rotation = 90.0
 
-[node name="ExitBottom" parent="." index="14" instance=ExtResource("4_levelwall")]
+[node name="ExitTop2" parent="." index="14" instance=ExtResource("4_levelwall")]
+position = Vector2(400, 422)
+rotation = 1.5708
+wall_length = 50.0
+wall_rotation = 90.0
+
+[node name="ExitBottom" parent="." index="15" instance=ExtResource("4_levelwall")]
 position = Vector2(800, 425)
 rotation = 1.5708
 wall_length = 50.0
 wall_rotation = 90.0
 
-[node name="EntryChamberTop" parent="." index="15" instance=ExtResource("4_levelwall")]
-position = Vector2(175, 200)
+[node name="EntryChamberTop" parent="." index="16" instance=ExtResource("4_levelwall")]
+position = Vector2(223, 200)
 wall_length = 50.0
 
-[node name="EntryChamberBottom" parent="." index="16" instance=ExtResource("4_levelwall")]
-position = Vector2(175, 400)
-wall_length = 50.0
+[node name="EntryChamberBottom" parent="." index="17" instance=ExtResource("4_levelwall")]
+position = Vector2(303, 400)
+wall_length = 200.0
 
-[node name="ExitChamberTop" parent="." index="17" instance=ExtResource("4_levelwall")]
+[node name="ExitChamberTop" parent="." index="18" instance=ExtResource("4_levelwall")]
 position = Vector2(825, 200)
 wall_length = 50.0
 
-[node name="ExitChamberBottom" parent="." index="18" instance=ExtResource("4_levelwall")]
+[node name="ExitChamberBottom" parent="." index="19" instance=ExtResource("4_levelwall")]
 position = Vector2(825, 400)
 wall_length = 50.0
 
-[node name="ObstacleSync1" parent="." index="19" instance=ExtResource("5_obstacleplace")]
-position = Vector2(300, 300)
+[node name="ObstacleSync1" parent="." index="20" instance=ExtResource("5_obstacleplace")]
+position = Vector2(300, 284)
 move_pattern = "vertical"
 move_speed = 90.0
-move_distance = 100.0
+move_distance = 75.0
 
-[node name="ObstacleSync2" parent="." index="20" instance=ExtResource("5_obstacleplace")]
-position = Vector2(432, 300)
+[node name="ObstacleSync2" parent="." index="21" instance=ExtResource("5_obstacleplace")]
+position = Vector2(432, 284)
 move_pattern = "vertical"
 move_speed = 90.0
-move_distance = 100.0
+move_distance = 75.0
 
-[node name="ObstacleSync4" parent="." index="21" instance=ExtResource("5_obstacleplace")]
+[node name="ObstacleSync4" parent="." index="22" instance=ExtResource("5_obstacleplace")]
 position = Vector2(574, 300)
 move_pattern = "vertical"
 move_speed = 90.0
 move_distance = 100.0
 
-[node name="ObstacleSync5" parent="." index="22" instance=ExtResource("5_obstacleplace")]
+[node name="ObstacleSync5" parent="." index="23" instance=ExtResource("5_obstacleplace")]
 position = Vector2(700, 300)
 move_pattern = "vertical"
 move_speed = 90.0
 move_distance = 100.0
 
-[node name="ObstacleExit" parent="." index="23" instance=ExtResource("5_obstacleplace")]
+[node name="ObstacleExit" parent="." index="24" instance=ExtResource("5_obstacleplace")]
 position = Vector2(874, 304)
 move_pattern = "circular"
 move_speed = 70.0
 move_distance = 80.0
 
-[node name="ObstacleCross" parent="." index="24" instance=ExtResource("5_obstacleplace")]
+[node name="ObstacleCross" parent="." index="25" instance=ExtResource("5_obstacleplace")]
 position = Vector2(500, 200)
 move_speed = 110.0
+
+[node name="Collectible1" parent="." index="26" instance=ExtResource("6_collectible")]
+position = Vector2(157, 472)
+
+[node name="Collectible2" parent="." index="27" instance=ExtResource("6_collectible")]
+position = Vector2(503, 303)
+
+[node name="Collectible3" parent="." index="28" instance=ExtResource("6_collectible")]
+position = Vector2(882, 476)
+
+[node name="HintLabel" parent="UILayer" index="1"]
+offset_bottom = 43.0

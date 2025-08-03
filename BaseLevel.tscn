@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://3qrl1u48x8q"]
+[gd_scene load_steps=6 format=3 uid="uid://3qrl1u48x8q"]
 
 [ext_resource type="Script" uid="uid://cbp0251bhf1bp" path="res://BaseLevel.gd" id="1"]
 [ext_resource type="PackedScene" path="res://Goal.tscn" id="2"]
 [ext_resource type="TileSet" uid="uid://b8xjy4nv7rsqf" path="res://BackgroundTileSet.tres" id="3_background"]
+[ext_resource type="PackedScene" uid="uid://cy8mqx2n7t4hv" path="res://CollectiblesUI.tscn" id="4_collectiblesui"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_1"]
 font_size = 24
@@ -45,3 +46,5 @@ grow_horizontal = 2
 text = "Hint Text"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="CollectiblesUI" parent="UILayer" instance=ExtResource("4_collectiblesui")]

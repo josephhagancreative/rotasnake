@@ -7,6 +7,11 @@ var level_completed = false
 var awaiting_next_level = false
 var is_hard_mode = false
 
+# Collectible tracking
+var collectibles_per_level = 3
+var current_level_collectibles_collected = 0
+signal collectible_collected(collected_count: int, total_count: int)
+
 # Scene paths
 var main_menu_scene = "res://MainMenu.tscn"
 var level_scenes = {
@@ -25,6 +30,7 @@ var level_scenes = {
 func load_level(level_number: int):
 	current_level = level_number
 	level_completed = false
+	current_level_collectibles_collected = 0
 	
 	if level_scenes.has(level_number):
 		get_tree().change_scene_to_file(level_scenes[level_number])
@@ -36,6 +42,7 @@ func complete_level():
 func restart_current_level():
 	awaiting_next_level = false
 	level_completed = false
+	current_level_collectibles_collected = 0
 	get_tree().reload_current_scene()
 
 func start_new_game():
@@ -43,6 +50,7 @@ func start_new_game():
 	level_completed = false
 	awaiting_next_level = false
 	is_hard_mode = false
+	current_level_collectibles_collected = 0
 	load_level(1)
 
 func start_hard_mode():
@@ -50,6 +58,7 @@ func start_hard_mode():
 	level_completed = false
 	awaiting_next_level = false
 	is_hard_mode = true
+	current_level_collectibles_collected = 0
 	load_level(1)
 
 func advance_to_next_level():
@@ -69,7 +78,15 @@ func return_to_main_menu():
 	level_completed = false
 	awaiting_next_level = false
 	is_hard_mode = false
+	current_level_collectibles_collected = 0
 	get_tree().change_scene_to_file(main_menu_scene)
+
+func collect_collectible():
+	current_level_collectibles_collected += 1
+	collectible_collected.emit(current_level_collectibles_collected, collectibles_per_level)
+
+func get_collectible_progress() -> Array:
+	return [current_level_collectibles_collected, collectibles_per_level]
 
 func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS

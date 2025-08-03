@@ -9,6 +9,7 @@ class_name BaseLevel
 @onready var ui_layer = $UILayer
 @onready var level_label = $UILayer/LevelLabel
 @onready var hint_label = $UILayer/HintLabel
+@onready var collectibles_ui = $UILayer/CollectiblesUI
 
 var snake_scene = preload("res://Snake.tscn")
 var snake_instance
@@ -20,6 +21,9 @@ func _ready():
 	
 	# Setup editor-placed elements
 	setup_editor_elements()
+	
+	# Setup collectibles
+	setup_collectibles()
 	
 	# Spawn snake
 	spawn_snake()
@@ -61,6 +65,16 @@ func setup_editor_elements():
 		# The placement nodes handle their own spawning in _ready()
 		# so we just need to ensure they're processed correctly
 		pass
+
+func setup_collectibles():
+	# Connect to existing collectibles in the scene
+	var collectibles = get_tree().get_nodes_in_group("collectibles")
+	for collectible in collectibles:
+		if collectible.has_signal("collected"):
+			collectible.collected.connect(_on_collectible_collected)
+
+func _on_collectible_collected():
+	GameManager.collect_collectible()
 
 func _on_snake_died():
 	# Show death message with enhanced styling

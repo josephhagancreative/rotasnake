@@ -5,7 +5,7 @@ class_name LevelWall
 @export var wall_length: float = 100.0 : set = set_wall_length
 @export var wall_rotation: float = 0.0 : set = set_wall_rotation
 @export var wall_width: float = 10.0 : set = set_wall_width
-@export var wall_color: Color = Color(1, 0, 0, 1) : set = set_wall_color
+@export var wall_color: Color = Color(0.372549, 0.164706, 0.094118, 1) : set = set_wall_color
 
 var line_visual: Line2D
 var static_body: StaticBody2D
