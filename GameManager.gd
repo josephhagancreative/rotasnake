@@ -5,6 +5,7 @@ var current_level = 1
 var total_levels = 10
 var level_completed = false
 var awaiting_next_level = false
+var is_hard_mode = false
 
 # Scene paths
 var main_menu_scene = "res://MainMenu.tscn"
@@ -41,6 +42,14 @@ func start_new_game():
 	current_level = 1
 	level_completed = false
 	awaiting_next_level = false
+	is_hard_mode = false
+	load_level(1)
+
+func start_hard_mode():
+	current_level = 1
+	level_completed = false
+	awaiting_next_level = false
+	is_hard_mode = true
 	load_level(1)
 
 func advance_to_next_level():
@@ -59,6 +68,7 @@ func return_to_main_menu():
 	current_level = 1
 	level_completed = false
 	awaiting_next_level = false
+	is_hard_mode = false
 	get_tree().change_scene_to_file(main_menu_scene)
 
 func _ready():
