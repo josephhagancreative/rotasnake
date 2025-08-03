@@ -7,9 +7,14 @@
 [ext_resource type="PackedScene" uid="uid://bx2k5g5g6uh8e" path="res://TimerUI.tscn" id="5_timerui"]
 [ext_resource type="PackedScene" uid="uid://cnj6i4gh8bj4k" path="res://LevelCompleteScreen.tscn" id="6_levelcompletescreen"]
 [ext_resource type="PackedScene" uid="uid://bqd8w6n5j4k3h" path="res://GameCompleteScreen.tscn" id="7_gamecompletescreen"]
+[ext_resource type="FontFile" uid="uid://dablhvfs76yft" path="res://assets/fonts/Jersey15-Regular.ttf" id="8_jersey_font"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_1"]
-font_size = 24
+font = ExtResource("8_jersey_font")
+font_size = 20
+font_color = Color(1, 1, 1, 1)
+shadow_color = Color(0, 0, 0, 1)
+shadow_offset = Vector2(1, 1)
 
 [node name="BaseLevel" type="Node2D"]
 script = ExtResource("1")

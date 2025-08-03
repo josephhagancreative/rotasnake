@@ -1,6 +1,8 @@
 extends Node2D
 class_name BaseLevel
 
+var jersey_font = preload("res://assets/fonts/Jersey15-Regular.ttf")
+
 @export var snake_start_position = Vector2(150, 300)
 @export var level_name = "Level"
 @export var level_hint = "Navigate to the goal!"
@@ -24,6 +26,9 @@ func _ready():
 	# Set level name and hint
 	level_label.text = level_name
 	hint_label.text = level_hint
+	
+	# Apply Jersey font and drop shadows to UI labels
+	apply_font_and_shadows()
 	
 	# Setup editor-placed elements
 	setup_editor_elements()
@@ -66,6 +71,20 @@ func spawn_snake():
 	add_child(snake_instance)
 	snake_instance.died.connect(_on_snake_died)
 
+func apply_font_and_shadows():
+	# Apply Jersey font and drop shadows to level and hint labels
+	if level_label:
+		level_label.add_theme_font_override("font", jersey_font)
+		level_label.add_theme_color_override("font_shadow_color", Color.BLACK)
+		level_label.add_theme_constant_override("shadow_offset_x", 1)
+		level_label.add_theme_constant_override("shadow_offset_y", 1)
+	
+	if hint_label:
+		hint_label.add_theme_font_override("font", jersey_font)
+		hint_label.add_theme_color_override("font_shadow_color", Color.BLACK)
+		hint_label.add_theme_constant_override("shadow_offset_x", 1)
+		hint_label.add_theme_constant_override("shadow_offset_y", 1)
+
 func setup_editor_elements():
 	# This function automatically handles any MovingObstaclePlacement nodes
 	# and other editor-placed elements that need runtime processing
@@ -107,8 +126,14 @@ func _on_snake_died():
 	stop_level_timer()
 	
 	# Show death message with enhanced styling
-	hint_label.text = "💀 YOU DIED! 💀\nPress SPACE to restart"
+	hint_label.text = "YOU DIED!\nPress SPACE to restart"
 	hint_label.modulate = Color(1, 0.3, 0.3, 1.0)  # Red color for death
+	
+	# Ensure font and shadows are applied to death message
+	hint_label.add_theme_font_override("font", jersey_font)
+	hint_label.add_theme_color_override("font_shadow_color", Color.BLACK)
+	hint_label.add_theme_constant_override("shadow_offset_x", 1)
+	hint_label.add_theme_constant_override("shadow_offset_y", 1)
 	
 	# Clean up any existing tween
 	if death_tween:

@@ -20,7 +20,7 @@ layer_0/tile_data = PackedInt32Array(0, 1, 0, 65536, 1, 0, 131072, 1, 0, 196608,
 position = Vector2(911, 99)
 
 [node name="SnakeStartPoint" parent="." index="4" instance=ExtResource("3_snakestartpoint")]
-position = Vector2(100, 125)
+position = Vector2(173, 87)
 rotation = 1.5708
 
 [node name="WallTop" parent="." index="5" instance=ExtResource("4_levelwall")]
@@ -102,3 +102,18 @@ position = Vector2(788, 294)
 
 [node name="Collectible3" parent="." index="20" instance=ExtResource("6_collectible")]
 position = Vector2(459, 300)
+
+[node name="TimerUI" parent="UILayer" index="3"]
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_lock_ = true
+
+[node name="LevelCompleteScreen" parent="UILayer" index="4"]
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_lock_ = true
+
+[node name="GameCompleteScreen" parent="UILayer" index="5"]
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_lock_ = true

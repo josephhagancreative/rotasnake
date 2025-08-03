@@ -1,0 +1,18 @@
+[gd_resource type="Theme" load_steps=3 format=3 uid="uid://cj8w5n2m7k4p1"]
+
+[ext_resource type="FontFile" uid="uid://dablhvfs76yft" path="res://assets/fonts/Jersey15-Regular.ttf" id="1_jersey_font"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_1"]
+font = ExtResource("1_jersey_font")
+font_size = 16
+font_color = Color(1, 1, 1, 1)
+shadow_color = Color(0, 0, 0, 1)
+shadow_offset = Vector2(1, 1)
+
+[resource]
+Label/font_sizes/font_size = 16
+Label/fonts/font = ExtResource("1_jersey_font")
+Label/colors/font_color = Color(1, 1, 1, 1)
+Label/colors/font_shadow_color = Color(0, 0, 0, 1)
+Label/constants/shadow_offset_x = 1
+Label/constants/shadow_offset_y = 1

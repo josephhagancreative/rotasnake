@@ -1,6 +1,8 @@
 class_name TimerUI
 extends Control
 
+var jersey_font = preload("res://assets/fonts/Jersey15-Regular.ttf")
+
 @onready var timer_label: Label
 
 var elapsed_time: float = 0.0
@@ -10,7 +12,8 @@ func _ready():
 	# Create the timer label
 	timer_label = Label.new()
 	timer_label.text = "00:00.0"
-	timer_label.add_theme_font_size_override("font_size", 24)
+	timer_label.add_theme_font_override("font", jersey_font)
+	timer_label.add_theme_font_size_override("font_size", 20)
 	timer_label.add_theme_color_override("font_color", Color.WHITE)
 	timer_label.add_theme_color_override("font_shadow_color", Color.BLACK)
 	timer_label.add_theme_constant_override("shadow_offset_x", 1)

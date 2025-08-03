@@ -1,6 +1,8 @@
 class_name LevelCompleteScreen
 extends Control
 
+var jersey_font = preload("res://assets/fonts/Jersey15-Regular.ttf")
+
 @onready var background: ColorRect
 @onready var completion_label: Label
 @onready var time_label: Label
@@ -23,11 +25,12 @@ func _ready():
 	# Create completion label
 	completion_label = Label.new()
 	completion_label.text = "LEVEL COMPLETE!"
-	completion_label.add_theme_font_size_override("font_size", 48)
+	completion_label.add_theme_font_override("font", jersey_font)
+	completion_label.add_theme_font_size_override("font_size", 36)
 	completion_label.add_theme_color_override("font_color", Color(0, 1, 0, 1))
 	completion_label.add_theme_color_override("font_shadow_color", Color.BLACK)
-	completion_label.add_theme_constant_override("shadow_offset_x", 2)
-	completion_label.add_theme_constant_override("shadow_offset_y", 2)
+	completion_label.add_theme_constant_override("shadow_offset_x", 1)
+	completion_label.add_theme_constant_override("shadow_offset_y", 1)
 	completion_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	completion_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	completion_label.anchor_left = 0.5
@@ -43,7 +46,8 @@ func _ready():
 	# Create time label
 	time_label = Label.new()
 	time_label.text = "Time: 00:00.0"
-	time_label.add_theme_font_size_override("font_size", 32)
+	time_label.add_theme_font_override("font", jersey_font)
+	time_label.add_theme_font_size_override("font_size", 24)
 	time_label.add_theme_color_override("font_color", Color.YELLOW)
 	time_label.add_theme_color_override("font_shadow_color", Color.BLACK)
 	time_label.add_theme_constant_override("shadow_offset_x", 1)
@@ -63,7 +67,8 @@ func _ready():
 	# Create collectibles label
 	collectibles_label = Label.new()
 	collectibles_label.text = "Collectibles: 0/3"
-	collectibles_label.add_theme_font_size_override("font_size", 32)
+	collectibles_label.add_theme_font_override("font", jersey_font)
+	collectibles_label.add_theme_font_size_override("font_size", 24)
 	collectibles_label.add_theme_color_override("font_color", Color(1.0, 0.8, 0.0, 1.0))  # Golden yellow
 	collectibles_label.add_theme_color_override("font_shadow_color", Color.BLACK)
 	collectibles_label.add_theme_constant_override("shadow_offset_x", 1)
@@ -83,7 +88,8 @@ func _ready():
 	# Create continue instruction
 	continue_label = Label.new()
 	continue_label.text = "Press SPACE to continue"
-	continue_label.add_theme_font_size_override("font_size", 24)
+	continue_label.add_theme_font_override("font", jersey_font)
+	continue_label.add_theme_font_size_override("font_size", 20)
 	continue_label.add_theme_color_override("font_color", Color.WHITE)
 	continue_label.add_theme_color_override("font_shadow_color", Color.BLACK)
 	continue_label.add_theme_constant_override("shadow_offset_x", 1)
