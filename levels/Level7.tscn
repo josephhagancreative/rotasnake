@@ -20,7 +20,7 @@ layer_0/tile_data = PackedInt32Array(0, 1, 0, 65536, 1, 0, 131072, 1, 0, 196608,
 position = Vector2(873, 300)
 
 [node name="SnakeStartPoint" parent="." index="4" instance=ExtResource("3_snakestartpoint")]
-position = Vector2(86, 116)
+position = Vector2(139, 123)
 rotation = 1.5708
 
 [node name="WallTop" parent="." index="5" instance=ExtResource("4_levelwall")]

@@ -27,9 +27,7 @@ file_logging/enable_file_logging=true
 
 window/size/viewport_width=1024
 window/size/viewport_height=600
-window/size/resizable=true
 window/stretch/mode="canvas_items"
-window/stretch/aspect="keep"
 
 [input]
 

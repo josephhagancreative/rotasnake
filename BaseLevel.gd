@@ -11,10 +11,14 @@ class_name BaseLevel
 @onready var level_label = $UILayer/LevelLabel
 @onready var hint_label = $UILayer/HintLabel
 @onready var collectibles_ui = $UILayer/CollectiblesUI
+@onready var timer_ui = $UILayer/TimerUI
+@onready var completion_screen = $UILayer/LevelCompleteScreen
+@onready var game_complete_screen = $UILayer/GameCompleteScreen
 
 var snake_scene = preload("res://Snake.tscn")
 var snake_instance
 var death_tween: Tween
+var level_start_time: float = 0.0
 
 func _ready():
 	# Set level name and hint
@@ -32,6 +36,9 @@ func _ready():
 	
 	# Connect goal
 	goal.body_entered.connect(_on_goal_reached)
+	
+	# Start timer
+	start_level_timer()
 	
 	# Show hint briefly
 	if hint_label:
@@ -78,7 +85,27 @@ func setup_collectibles():
 func _on_collectible_collected():
 	GameManager.collect_collectible()
 
+func start_level_timer():
+	if timer_ui:
+		timer_ui.start_timer()
+
+func stop_level_timer():
+	if timer_ui:
+		timer_ui.stop_timer()
+
+func reset_level_timer():
+	if timer_ui:
+		timer_ui.reset_timer()
+
+func get_level_time() -> float:
+	if timer_ui:
+		return timer_ui.get_elapsed_time()
+	return 0.0
+
 func _on_snake_died():
+	# Stop timer on death
+	stop_level_timer()
+	
 	# Show death message with enhanced styling
 	hint_label.text = "💀 YOU DIED! 💀\nPress SPACE to restart"
 	hint_label.modulate = Color(1, 0.3, 0.3, 1.0)  # Red color for death
@@ -95,24 +122,48 @@ func _on_snake_died():
 
 func _on_goal_reached(body):
 	if body == snake_instance and not GameManager.level_completed:
+		# Stop timer and get completion time
+		stop_level_timer()
+		var completion_time = get_level_time()
+		var collectible_progress = GameManager.get_collectible_progress()
+		
+		# Record level statistics
+		GameManager.record_level_completion(GameManager.current_level, completion_time, collectible_progress[0])
+		
 		GameManager.complete_level()
 		snake_instance.set_physics_process(false)
 		
 		# Visual feedback
 		goal.modulate = Color(0, 1, 0, 1)
 		
-		# Show level complete message
-		if GameManager.current_level < GameManager.total_levels:
-			hint_label.text = "🎉 Level Complete! 🎉\nPress SPACE for next level"
-		else:
-			hint_label.text = "🎉 Game Complete! 🎉\nPress SPACE to return to menu"
+		# Hide the hint label (we'll show completion screen instead)
+		hint_label.modulate.a = 0.0
 		
-		hint_label.modulate = Color(0, 1, 0, 1.0)  # Green color for success
+		# Check if this is the final level
+		if GameManager.is_final_level():
+			# Show game completion screen with all stats
+			if game_complete_screen:
+				game_complete_screen.show_game_complete_screen()
+		else:
+			# Show level completion screen
+			if completion_screen:
+				completion_screen.show_completion_screen(completion_time, collectible_progress[0], collectible_progress[1])
 
 func _input(event):
 	if event.is_action_pressed("ui_select") or event.is_action_pressed("ui_accept"):  # Space/Enter
+		# Check if game completion screen is visible
+		if game_complete_screen and game_complete_screen.is_visible:
+			# Hide game completion screen and return to menu
+			game_complete_screen.hide_game_complete_screen()
+			GameManager.return_to_main_menu()
+			return
+		
 		# Check if level is completed and awaiting next level
 		if GameManager.awaiting_next_level:
+			# Hide completion screen
+			if completion_screen:
+				completion_screen.hide_completion_screen()
+			
 			# Clean up tweens before advancing
 			if death_tween:
 				death_tween.kill()
@@ -131,6 +182,9 @@ func _input(event):
 			GameManager.advance_to_next_level()
 		else:
 			# Restart current level if dead
+			# Reset timer on restart
+			reset_level_timer()
+			
 			# Clean up tweens before restarting
 			if death_tween:
 				death_tween.kill()
