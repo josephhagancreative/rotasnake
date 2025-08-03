@@ -1,23 +1,19 @@
 [gd_scene load_steps=4 format=3 uid="uid://drdy7phf6ngoe"]
 
 [ext_resource type="Script" uid="uid://4ga8n43xwirn" path="res://tail_segment.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://bqeg37v6tc2tj" path="res://assets/sprites/snake-body-export.png" id="2_2gr24"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_1"]
-radius = 14.0
-
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_1"]
-size = Vector2(28, 28)
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_b1qaf"]
+height = 32.0
 
 [node name="TailSegment" type="Area2D"]
 collision_layer = 2
-collision_mask = 1
 script = ExtResource("1")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("CircleShape2D_1")
+shape = SubResource("CapsuleShape2D_b1qaf")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-texture = SubResource("PlaceholderTexture2D_1")
-modulate = Color(0.7, 0.7, 0.7, 1)
+texture = ExtResource("2_2gr24")
 
 [connection signal="area_entered" from="." to="." method="_on_area_entered"]

@@ -7,7 +7,7 @@ const ROTATION_RADIUS = 50.0  # Distance from center when rotating
 const MOVE_SPEED = ROTATION_SPEED * ROTATION_RADIUS * 1.25  # Match tangential speed of rotation, increased by 25% (125px/s)
 
 # Tail constants
-const SEGMENT_DISTANCE = 18.0  # Distance between segments
+const SEGMENT_DISTANCE = 13.0  # Distance between segments
 const POSITION_HISTORY_SIZE = 300  # How many positions to remember
 const HISTORY_RECORD_INTERVAL = 0.02  # How often to record position (seconds)
 
@@ -74,7 +74,8 @@ func _ready():
 		rotation_angle = atan2(global_position.y - rotation_center.y, global_position.x - rotation_center.x)
 		
 		# Set initial sprite rotation to face the starting direction
-		sprite.rotation = facing_direction.angle()
+		# Subtract π/2 because sprite artwork faces up by default, but we want it to face the movement direction
+		sprite.rotation = facing_direction.angle() - PI/2
 	
 	
 	# Initialize position history with starting positions
@@ -130,7 +131,7 @@ func handle_movement(delta):
 		return
 	
 	# Keep sprite rotation consistent with facing direction (don't change facing_direction)
-	sprite.rotation = facing_direction.angle()
+	sprite.rotation = facing_direction.angle() - PI/2
 
 func handle_rotation(delta):
 	# Rotate around the center point using current rotation direction
@@ -160,7 +161,7 @@ func handle_rotation(delta):
 	
 	
 	# Make sprite face the tangent direction
-	sprite.rotation = facing_direction.angle()
+	sprite.rotation = facing_direction.angle() - PI/2
 
 func handle_transition(delta):
 	# Update transition timer
@@ -180,7 +181,7 @@ func handle_transition(delta):
 		return
 	
 	# Keep sprite facing the current direction (don't change during transition)
-	sprite.rotation = facing_direction.angle()
+	sprite.rotation = facing_direction.angle() - PI/2
 	
 	# Check if transition is complete
 	if progress >= 1.0:
@@ -408,4 +409,4 @@ func set_initial_facing_direction(direction: Vector2):
 	
 	# Set initial sprite rotation to face the starting direction
 	if sprite:
-		sprite.rotation = facing_direction.angle()
+		sprite.rotation = facing_direction.angle() - PI/2
