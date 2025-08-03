@@ -4,8 +4,10 @@ extends Node
 var current_level = 1
 var total_levels = 10
 var level_completed = false
+var awaiting_next_level = false
 
-# Level scenes paths
+# Scene paths
+var main_menu_scene = "res://MainMenu.tscn"
 var level_scenes = {
 	1: "res://levels/Level1.tscn",
 	2: "res://levels/Level2.tscn",
@@ -28,19 +30,36 @@ func load_level(level_number: int):
 
 func complete_level():
 	level_completed = true
+	awaiting_next_level = true
+
+func restart_current_level():
+	awaiting_next_level = false
+	level_completed = false
+	get_tree().reload_current_scene()
+
+func start_new_game():
+	current_level = 1
+	level_completed = false
+	awaiting_next_level = false
+	load_level(1)
+
+func advance_to_next_level():
+	if not awaiting_next_level:
+		return
 	
-	# Wait a moment then load next level
-	await get_tree().create_timer(1.0).timeout
+	awaiting_next_level = false
 	
 	if current_level < total_levels:
 		load_level(current_level + 1)
 	else:
-		# Return to level 1 for now
-		load_level(1)
+		# Game completed, return to main menu
+		return_to_main_menu()
 
-func restart_current_level():
-	get_tree().reload_current_scene()
+func return_to_main_menu():
+	current_level = 1
+	level_completed = false
+	awaiting_next_level = false
+	get_tree().change_scene_to_file(main_menu_scene)
 
 func _ready():
-	# Start from level 1
 	process_mode = Node.PROCESS_MODE_ALWAYS

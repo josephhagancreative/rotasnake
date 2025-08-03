@@ -1,7 +1,7 @@
 extends Area2D
 class_name Goal
 
-@onready var sprite = $Sprite2D
+@onready var color_rect = $ColorRect
 @onready var collision = $CollisionShape2D
 
 var time = 0.0
@@ -10,9 +10,6 @@ func _ready():
 	# Set collision layers
 	collision_layer = 32  # Layer 6
 	collision_mask = 1    # Detect layer 1 (snake head)
-	
-	# Make it visible
-	modulate = Color(1, 1, 0, 1)  # Yellow
 
 func _process(delta):
 	time += delta

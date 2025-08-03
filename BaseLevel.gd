@@ -84,29 +84,55 @@ func _on_goal_reached(body):
 		
 		# Visual feedback
 		goal.modulate = Color(0, 1, 0, 1)
-		hint_label.text = "Level Complete!"
-		hint_label.modulate.a = 1.0
+		
+		# Show level complete message
+		if GameManager.current_level < GameManager.total_levels:
+			hint_label.text = "🎉 Level Complete! 🎉\nPress SPACE for next level"
+		else:
+			hint_label.text = "🎉 Game Complete! 🎉\nPress SPACE to return to menu"
+		
+		hint_label.modulate = Color(0, 1, 0, 1.0)  # Green color for success
 
 func _input(event):
 	if event.is_action_pressed("ui_select") or event.is_action_pressed("ui_accept"):  # Space/Enter
-		# Clean up tweens before restarting
-		if death_tween:
-			death_tween.kill()
-			death_tween = null
-		if snake_instance and snake_instance.has_method("cleanup"):
-			snake_instance.cleanup()
-		
-		# Clean up all moving obstacles
-		var obstacles = get_tree().get_nodes_in_group("moving_obstacles")
-		for obstacle in obstacles:
-			if obstacle.has_method("cleanup"):
-				obstacle.cleanup()
-		
-		# Add small delay to ensure all cleanup is complete
-		await get_tree().process_frame
-		GameManager.restart_current_level()
+		# Check if level is completed and awaiting next level
+		if GameManager.awaiting_next_level:
+			# Clean up tweens before advancing
+			if death_tween:
+				death_tween.kill()
+				death_tween = null
+			if snake_instance and snake_instance.has_method("cleanup"):
+				snake_instance.cleanup()
+			
+			# Clean up all moving obstacles
+			var obstacles = get_tree().get_nodes_in_group("moving_obstacles")
+			for obstacle in obstacles:
+				if obstacle.has_method("cleanup"):
+					obstacle.cleanup()
+			
+			# Add small delay to ensure all cleanup is complete
+			await get_tree().process_frame
+			GameManager.advance_to_next_level()
+		else:
+			# Restart current level if dead
+			# Clean up tweens before restarting
+			if death_tween:
+				death_tween.kill()
+				death_tween = null
+			if snake_instance and snake_instance.has_method("cleanup"):
+				snake_instance.cleanup()
+			
+			# Clean up all moving obstacles
+			var obstacles = get_tree().get_nodes_in_group("moving_obstacles")
+			for obstacle in obstacles:
+				if obstacle.has_method("cleanup"):
+					obstacle.cleanup()
+			
+			# Add small delay to ensure all cleanup is complete
+			await get_tree().process_frame
+			GameManager.restart_current_level()
 	elif event.is_action_pressed("ui_cancel"):  # Escape
-		get_tree().quit()
+		GameManager.return_to_main_menu()
 
 # Override in child levels to add moving obstacles
 func _physics_process(delta):
