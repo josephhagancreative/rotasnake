@@ -12,6 +12,7 @@ class_name BaseLevel
 
 var snake_scene = preload("res://Snake.tscn")
 var snake_instance
+var death_tween: Tween
 
 func _ready():
 	# Set level name
@@ -56,11 +57,15 @@ func _on_snake_died():
 	hint_label.text = "💀 YOU DIED! 💀\nPress SPACE to restart"
 	hint_label.modulate = Color(1, 0.3, 0.3, 1.0)  # Red color for death
 	
+	# Clean up any existing tween
+	if death_tween:
+		death_tween.kill()
+	
 	# Pulsing effect
-	var tween = create_tween()
-	tween.set_loops()
-	tween.tween_property(hint_label, "modulate:a", 0.5, 0.5)
-	tween.tween_property(hint_label, "modulate:a", 1.0, 0.5)
+	death_tween = create_tween()
+	death_tween.set_loops()
+	death_tween.tween_property(hint_label, "modulate:a", 0.5, 0.5)
+	death_tween.tween_property(hint_label, "modulate:a", 1.0, 0.5)
 
 func _on_goal_reached(body):
 	if body == snake_instance and not GameManager.level_completed:
@@ -74,6 +79,21 @@ func _on_goal_reached(body):
 
 func _input(event):
 	if event.is_action_pressed("ui_select") or event.is_action_pressed("ui_accept"):  # Space/Enter
+		# Clean up tweens before restarting
+		if death_tween:
+			death_tween.kill()
+			death_tween = null
+		if snake_instance and snake_instance.has_method("cleanup"):
+			snake_instance.cleanup()
+		
+		# Clean up all moving obstacles
+		var obstacles = get_tree().get_nodes_in_group("moving_obstacles")
+		for obstacle in obstacles:
+			if obstacle.has_method("cleanup"):
+				obstacle.cleanup()
+		
+		# Add small delay to ensure all cleanup is complete
+		await get_tree().process_frame
 		GameManager.restart_current_level()
 	elif event.is_action_pressed("ui_cancel"):  # Escape
 		get_tree().quit()

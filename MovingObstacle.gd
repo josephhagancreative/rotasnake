@@ -18,6 +18,9 @@ var phase_distance: float = 0.0
 func _ready():
 	start_position = position
 	
+	# Add to group for cleanup
+	add_to_group("moving_obstacles")
+	
 	# Set collision layers
 	collision_layer = 8   # Layer 4 (hazards)
 	collision_mask = 1    # Collide with layer 1 (snake)
@@ -93,3 +96,8 @@ func _physics_process(delta):
 func _on_body_entered(body):
 	if body.has_method("die"):
 		body.die()
+
+func cleanup():
+	# Stop all processing to prevent errors during scene transition
+	set_physics_process(false)
+	set_process(false)

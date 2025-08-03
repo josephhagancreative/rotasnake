@@ -43,7 +43,7 @@ func complete_level():
 		load_level(1)
 
 func restart_current_level():
-	load_level(current_level)
+	get_tree().reload_current_scene()
 
 func _ready():
 	# Start from level 1

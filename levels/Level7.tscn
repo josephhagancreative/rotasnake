@@ -1,0 +1,12 @@
+[gd_scene load_steps=4 format=3 uid="uid://m4qr7couoihj"]
+
+[ext_resource type="Script" uid="uid://c08ar8edbyhfg" path="res://levels/Level7.gd" id="1_level7"]
+[ext_resource type="PackedScene" uid="uid://3qrl1u48x8q" path="res://BaseLevel.tscn" id="2_baselevel"]
+[ext_resource type="PackedScene" uid="uid://b6y5xqr7yvekl" path="res://SnakeStartPoint.tscn" id="3_snakestartpoint"]
+
+[node name="Level7" instance=ExtResource("2_baselevel")]
+script = ExtResource("1_level7")
+
+[node name="SnakeStartPoint" parent="." index="4" instance=ExtResource("3_snakestartpoint")]
+position = Vector2(86, 116)
+rotation = 1.5708

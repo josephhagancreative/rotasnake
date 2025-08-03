@@ -47,6 +47,7 @@ var min_tail_segment_distance = 3  # Ignore first 3 tail segments
 signal died()
 
 var tail_segment_scene = preload("res://TailSegment.tscn")
+var death_tween: Tween
 
 func _ready():
 	# Initialize immunity timer
@@ -283,20 +284,30 @@ func die():
 	died.emit()
 	set_physics_process(false)  # Stop movement
 	
+	# Clean up any existing death tween
+	if death_tween:
+		death_tween.kill()
+	
 	# Enhanced visual feedback
 	modulate = Color(1, 0.3, 0.3, 1.0)
 	
 	# Add death animation
-	var tween = create_tween()
-	tween.set_parallel(true)
-	tween.tween_property(self, "modulate", Color(1, 0, 0, 0.5), 0.5)
-	tween.tween_property(self, "scale", Vector2(1.2, 1.2), 0.3)
-	tween.tween_property(self, "rotation", PI/4, 0.5)
+	death_tween = create_tween()
+	death_tween.set_parallel(true)
+	death_tween.tween_property(self, "modulate", Color(1, 0, 0, 0.5), 0.5)
+	death_tween.tween_property(self, "scale", Vector2(1.2, 1.2), 0.3)
+	death_tween.tween_property(self, "rotation", PI/4, 0.5)
 	
 	# Clean up tail with delay
 	for segment in tail_segments:
 		segment.modulate = Color(1, 0.3, 0.3, 1.0)
 		segment.queue_free()
+
+func cleanup():
+	# Clean up tweens before scene change
+	if death_tween:
+		death_tween.kill()
+		death_tween = null
 
 # New tail-related functions
 func create_tail_segments():
