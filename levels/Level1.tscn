@@ -9,11 +9,11 @@
 script = ExtResource("1_b84ys")
 
 [node name="Goal" parent="." index="2"]
-position = Vector2(840, 143)
+position = Vector2(863, 454)
 
 [node name="SnakeStartPoint" parent="." index="4" instance=ExtResource("3_snakestartpoint")]
-position = Vector2(173, 139)
-rotation = 1.57079
+position = Vector2(173, 472)
+rotation = 4.71238
 
 [node name="WallTop" parent="." index="5" instance=ExtResource("4_levelwall")]
 position = Vector2(512, 50)
@@ -36,19 +36,19 @@ wall_length = 500.0
 wall_rotation = 90.0
 
 [node name="WallMaze1" parent="." index="9" instance=ExtResource("4_levelwall")]
-position = Vector2(300, 225)
+position = Vector2(300, 376)
 rotation = 1.5708
 wall_length = 350.0
 wall_rotation = 90.0
 
 [node name="WallMaze2" parent="." index="10" instance=ExtResource("4_levelwall")]
-position = Vector2(500, 375)
+position = Vector2(533, 225)
 rotation = 1.5708
 wall_length = 350.0
 wall_rotation = 90.0
 
 [node name="WallMaze3" parent="." index="11" instance=ExtResource("4_levelwall")]
-position = Vector2(700, 225)
+position = Vector2(758, 374)
 rotation = 1.5708
 wall_length = 350.0
 wall_rotation = 90.0
