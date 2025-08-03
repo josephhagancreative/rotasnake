@@ -1,11 +1,108 @@
-[gd_scene load_steps=4 format=3 uid="uid://bsi7hda8bin28"]
+[gd_scene load_steps=5 format=3 uid="uid://bsi7hda8bin28"]
 
 [ext_resource type="Script" uid="uid://c5446agrrb1ao" path="res://levels/Level6.gd" id="1_level6"]
 [ext_resource type="PackedScene" uid="uid://3qrl1u48x8q" path="res://BaseLevel.tscn" id="2_baselevel"]
 [ext_resource type="PackedScene" uid="uid://b6y5xqr7yvekl" path="res://SnakeStartPoint.tscn" id="3_snakestartpoint"]
+[ext_resource type="PackedScene" uid="uid://c4tvoxwo214xv" path="res://LevelWall.tscn" id="4_levelwall"]
 
 [node name="Level6" instance=ExtResource("2_baselevel")]
 script = ExtResource("1_level6")
 
 [node name="SnakeStartPoint" parent="." index="4" instance=ExtResource("3_snakestartpoint")]
 position = Vector2(512, 500)
+
+[node name="WallTop" parent="." index="5" instance=ExtResource("4_levelwall")]
+collision_layer = 4
+collision_mask = 0
+start_point = Vector2(50, 50)
+end_point = Vector2(974, 50)
+
+[node name="WallBottom" parent="." index="6" instance=ExtResource("4_levelwall")]
+collision_layer = 4
+collision_mask = 0
+start_point = Vector2(50, 550)
+end_point = Vector2(974, 550)
+
+[node name="WallLeft" parent="." index="7" instance=ExtResource("4_levelwall")]
+collision_layer = 4
+collision_mask = 0
+start_point = Vector2(50, 50)
+end_point = Vector2(50, 550)
+
+[node name="WallRight" parent="." index="8" instance=ExtResource("4_levelwall")]
+collision_layer = 4
+collision_mask = 0
+start_point = Vector2(974, 50)
+end_point = Vector2(974, 550)
+
+[node name="SpiralOuter1" parent="." index="9" instance=ExtResource("4_levelwall")]
+start_point = Vector2(750, 150)
+end_point = Vector2(750, 450)
+
+[node name="SpiralOuter2" parent="." index="10" instance=ExtResource("4_levelwall")]
+start_point = Vector2(750, 450)
+end_point = Vector2(350, 450)
+
+[node name="SpiralOuter3" parent="." index="11" instance=ExtResource("4_levelwall")]
+start_point = Vector2(350, 450)
+end_point = Vector2(350, 200)
+
+[node name="SpiralOuter4" parent="." index="12" instance=ExtResource("4_levelwall")]
+start_point = Vector2(350, 200)
+end_point = Vector2(650, 200)
+
+[node name="SpiralOuter5" parent="." index="13" instance=ExtResource("4_levelwall")]
+start_point = Vector2(650, 200)
+end_point = Vector2(650, 400)
+
+[node name="SpiralOuter6" parent="." index="14" instance=ExtResource("4_levelwall")]
+start_point = Vector2(650, 400)
+end_point = Vector2(450, 400)
+
+[node name="SpiralOuter7" parent="." index="15" instance=ExtResource("4_levelwall")]
+start_point = Vector2(450, 400)
+end_point = Vector2(450, 250)
+
+[node name="SpiralOuter8" parent="." index="16" instance=ExtResource("4_levelwall")]
+start_point = Vector2(450, 250)
+end_point = Vector2(550, 250)
+
+[node name="SpiralOuter9" parent="." index="17" instance=ExtResource("4_levelwall")]
+start_point = Vector2(550, 250)
+end_point = Vector2(550, 350)
+
+[node name="SpiralInner1" parent="." index="18" instance=ExtResource("4_levelwall")]
+start_point = Vector2(650, 175)
+end_point = Vector2(400, 175)
+
+[node name="SpiralInner2" parent="." index="19" instance=ExtResource("4_levelwall")]
+start_point = Vector2(400, 175)
+end_point = Vector2(400, 425)
+
+[node name="SpiralInner3" parent="." index="20" instance=ExtResource("4_levelwall")]
+start_point = Vector2(400, 425)
+end_point = Vector2(675, 425)
+
+[node name="SpiralInner4" parent="." index="21" instance=ExtResource("4_levelwall")]
+start_point = Vector2(675, 425)
+end_point = Vector2(675, 225)
+
+[node name="SpiralInner5" parent="." index="22" instance=ExtResource("4_levelwall")]
+start_point = Vector2(675, 225)
+end_point = Vector2(500, 225)
+
+[node name="SpiralInner6" parent="." index="23" instance=ExtResource("4_levelwall")]
+start_point = Vector2(500, 225)
+end_point = Vector2(500, 375)
+
+[node name="SpiralInner7" parent="." index="24" instance=ExtResource("4_levelwall")]
+start_point = Vector2(500, 375)
+end_point = Vector2(575, 375)
+
+[node name="SpiralEntry" parent="." index="25" instance=ExtResource("4_levelwall")]
+start_point = Vector2(750, 150)
+end_point = Vector2(800, 150)
+
+[node name="SpiralCenter" parent="." index="26" instance=ExtResource("4_levelwall")]
+start_point = Vector2(575, 375)
+end_point = Vector2(575, 300)
