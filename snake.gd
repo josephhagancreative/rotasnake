@@ -293,8 +293,9 @@ func die():
 	
 	# Clean up tail with delay
 	for segment in tail_segments:
-		segment.modulate = Color(1, 0.3, 0.3, 1.0)
-		segment.queue_free()
+		if is_instance_valid(segment):
+			segment.modulate = Color(1, 0.3, 0.3, 1.0)
+			segment.queue_free()
 
 func cleanup():
 	# Clean up tweens before scene change

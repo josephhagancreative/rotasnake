@@ -117,4 +117,3 @@ move_distance = 80.0
 [node name="ObstacleCross" parent="." index="24" instance=ExtResource("5_obstacleplace")]
 position = Vector2(500, 200)
 move_speed = 110.0
-move_distance = 120.0
