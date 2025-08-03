@@ -25,12 +25,9 @@ func load_level(level_number: int):
 	
 	if level_scenes.has(level_number):
 		get_tree().change_scene_to_file(level_scenes[level_number])
-	else:
-		print("Level " + str(level_number) + " not found!")
 
 func complete_level():
 	level_completed = true
-	print("Level " + str(current_level) + " completed!")
 	
 	# Wait a moment then load next level
 	await get_tree().create_timer(1.0).timeout
@@ -38,7 +35,6 @@ func complete_level():
 	if current_level < total_levels:
 		load_level(current_level + 1)
 	else:
-		print("All levels completed!")
 		# Return to level 1 for now
 		load_level(1)
 

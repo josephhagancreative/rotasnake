@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://c4tvoxwo214xw"]
+
+[ext_resource type="Script" path="res://MovingObstaclePlacement.gd" id="1_obstacle"]
+
+[node name="MovingObstaclePlacement" type="Node2D"]
+script = ExtResource("1_obstacle")
+move_pattern = "horizontal"
+move_speed = 100.0
+move_distance = 200.0

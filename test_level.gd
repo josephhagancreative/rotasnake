@@ -23,7 +23,6 @@ func _input(event):
 		get_tree().reload_current_scene()
 
 func _on_snake_died():
-	print("Game Over! Press Enter to restart")
 	
 func create_boundary_walls():
 	# Just visual markers for now - we'll add proper walls in next step

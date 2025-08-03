@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://bo3we6ui0brie"]
+[gd_scene load_steps=6 format=3 uid="uid://bo3we6ui0brie"]
 
 [ext_resource type="Script" uid="uid://cl8stosj3ceo5" path="res://levels/Level3.gd" id="1_gq8fh"]
 [ext_resource type="PackedScene" uid="uid://3qrl1u48x8q" path="res://BaseLevel.tscn" id="2_baselevel"]
 [ext_resource type="PackedScene" uid="uid://b6y5xqr7yvekl" path="res://SnakeStartPoint.tscn" id="3_snakestartpoint"]
+[ext_resource type="PackedScene" uid="uid://c4tvoxwo214xv" path="res://LevelWall.tscn" id="4_levelwall"]
+[ext_resource type="PackedScene" uid="uid://c4tvoxwo214xw" path="res://MovingObstaclePlacement.tscn" id="5_obstacleplace"]
 
 [node name="Level3" instance=ExtResource("2_baselevel")]
 script = ExtResource("1_gq8fh")
@@ -10,3 +12,62 @@ script = ExtResource("1_gq8fh")
 [node name="SnakeStartPoint" parent="." index="4" instance=ExtResource("3_snakestartpoint")]
 position = Vector2(163, 127)
 rotation = 1.57079
+
+[node name="WallTop" parent="." index="5" instance=ExtResource("4_levelwall")]
+collision_layer = 4
+collision_mask = 0
+start_point = Vector2(50, 50)
+end_point = Vector2(974, 50)
+
+[node name="WallBottom" parent="." index="6" instance=ExtResource("4_levelwall")]
+collision_layer = 4
+collision_mask = 0
+start_point = Vector2(50, 550)
+end_point = Vector2(974, 550)
+
+[node name="WallLeft" parent="." index="7" instance=ExtResource("4_levelwall")]
+collision_layer = 4
+collision_mask = 0
+start_point = Vector2(50, 50)
+end_point = Vector2(50, 550)
+
+[node name="WallRight" parent="." index="8" instance=ExtResource("4_levelwall")]
+collision_layer = 4
+collision_mask = 0
+start_point = Vector2(974, 50)
+end_point = Vector2(974, 550)
+
+[node name="WallLeftGap1" parent="." index="9" instance=ExtResource("4_levelwall")]
+collision_layer = 4
+collision_mask = 0
+start_point = Vector2(300, 50)
+end_point = Vector2(300, 250)
+
+[node name="WallLeftGap2" parent="." index="10" instance=ExtResource("4_levelwall")]
+collision_layer = 4
+collision_mask = 0
+start_point = Vector2(300, 350)
+end_point = Vector2(300, 550)
+
+[node name="WallRightGap1" parent="." index="11" instance=ExtResource("4_levelwall")]
+collision_layer = 4
+collision_mask = 0
+start_point = Vector2(700, 50)
+end_point = Vector2(700, 250)
+
+[node name="WallRightGap2" parent="." index="12" instance=ExtResource("4_levelwall")]
+collision_layer = 4
+collision_mask = 0
+start_point = Vector2(700, 350)
+end_point = Vector2(700, 550)
+
+[node name="ObstacleHorizontal" parent="." index="13" instance=ExtResource("5_obstacleplace")]
+position = Vector2(500, 300)
+move_speed = 80.0
+move_distance = 150.0
+
+[node name="ObstacleSquare" parent="." index="14" instance=ExtResource("5_obstacleplace")]
+position = Vector2(775, 225)
+move_pattern = "square"
+move_speed = 60.0
+move_distance = 300.0

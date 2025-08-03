@@ -153,13 +153,6 @@ func handle_rotation(delta):
 	var old_facing = facing_direction
 	facing_direction = tangent.normalized()
 	
-	# Log first few frames to see what's happening
-	if Engine.get_process_frames() < 100:
-		print("Snake.handle_rotation() - Frame ", Engine.get_process_frames())
-		print("  rotation_angle: ", rotation_angle)
-		print("  tangent: ", tangent)
-		print("  old_facing: ", old_facing)
-		print("  new facing_direction: ", facing_direction)
 	
 	# Make sprite face the tangent direction
 	sprite.rotation = facing_direction.angle()
@@ -387,7 +380,6 @@ func set_initial_facing_direction(direction: Vector2):
 	# Set the initial facing direction before _ready() completes
 	facing_direction = direction.normalized()
 	initial_setup_done = true  # Mark that we've done custom setup
-	print("Snake.set_initial_facing_direction() - Setting facing_direction to: ", facing_direction)
 	
 	# For the rotation to work correctly, we need to position the rotation center
 	# such that the current facing direction IS the tangent to the circle at this position
@@ -404,15 +396,9 @@ func set_initial_facing_direction(direction: Vector2):
 	rotation_center = global_position + perpendicular * ROTATION_RADIUS
 	rotation_angle = atan2(global_position.y - rotation_center.y, global_position.x - rotation_center.x)
 	
-	print("Snake.set_initial_facing_direction() - rotation_direction: ", rotation_direction)
-	print("Snake.set_initial_facing_direction() - perpendicular: ", perpendicular)
-	print("Snake.set_initial_facing_direction() - rotation_center: ", rotation_center)
-	print("Snake.set_initial_facing_direction() - rotation_angle: ", rotation_angle)
 	
 	# Verify the tangent calculation matches our facing direction
 	var expected_tangent = Vector2(-sin(rotation_angle), cos(rotation_angle)) * rotation_direction
-	print("Snake.set_initial_facing_direction() - expected_tangent: ", expected_tangent)
-	print("Snake.set_initial_facing_direction() - facing_direction: ", facing_direction)
 	
 	# Set initial sprite rotation to face the starting direction
 	if sprite:
