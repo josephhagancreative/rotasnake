@@ -13,21 +13,20 @@ const HISTORY_RECORD_INTERVAL = 0.02  # How often to record position (seconds)
 
 # State management
 enum State { MOVING, ROTATING, TRANSITIONING }
-var current_state = State.ROTATING
+var current_state = State.MOVING
 var facing_direction = Vector2.ZERO  # The direction the snake is visually facing
 var rotation_angle = 0.0
 var rotation_center = Vector2.ZERO
 var initial_setup_done = false  # Flag to prevent _ready from overriding custom setup
 
-# Rotation direction control
+# Movement mode cycling
+enum MovementMode { COUNTER_CLOCKWISE, CLOCKWISE, FORWARD }
+var current_movement_mode = MovementMode.CLOCKWISE
 var rotation_direction = 1.0  # 1.0 for clockwise, -1.0 for counter-clockwise
 var target_rotation_direction = 1.0  # The direction we're transitioning to
 var transition_timer = 0.0
 var transition_duration = 0.1  # 0.1 second to transition between directions (nearly instant)
 
-# Input buffering for most recent input priority
-var input_queue = []
-var max_input_queue_size = 4
 
 # Tail management
 var tail_segments = []
@@ -56,6 +55,7 @@ func _ready():
 	# Initialize rotation direction variables
 	rotation_direction = 1.0  # Start clockwise
 	target_rotation_direction = 1.0
+	current_movement_mode = MovementMode.FORWARD  # Start with forward movement
 	
 	# Only do default setup if set_initial_facing_direction wasn't called
 	if not initial_setup_done:
@@ -112,9 +112,6 @@ func _physics_process(delta):
 	
 	# Update tail positions
 	update_tail_positions()
-	
-	# Check for input to switch states
-	check_input()
 
 func handle_movement(delta):
 	# Move in the current facing direction (keep facing_direction UNCHANGED during movement)
@@ -198,51 +195,58 @@ func handle_transition(delta):
 		rotation_angle = atan2(global_position.y - rotation_center.y, global_position.x - rotation_center.x)
 
 func _input(event):
-	# Left key: set rotation to counter-clockwise
+	# Left key: counter-clockwise rotation
 	if event.is_action_pressed("ui_left"):
-		if target_rotation_direction != -1.0:  # Only transition if direction changed
-			# Only start transition if we're in ROTATING state
-			if current_state == State.ROTATING:
-				start_rotation_transition(-1.0)
-			else:
-				# If we're moving, just set the target direction for later
-				target_rotation_direction = -1.0
-		add_to_input_queue("ui_left")
+		current_movement_mode = MovementMode.COUNTER_CLOCKWISE
+		apply_movement_mode()
 	
-	# Right key: set rotation to clockwise
+	# Right key: clockwise rotation
 	elif event.is_action_pressed("ui_right"):
-		if target_rotation_direction != 1.0:  # Only transition if direction changed
-			# Only start transition if we're in ROTATING state
-			if current_state == State.ROTATING:
-				start_rotation_transition(1.0)
-			else:
-				# If we're moving, just set the target direction for later
-				target_rotation_direction = 1.0
-		add_to_input_queue("ui_right")
+		current_movement_mode = MovementMode.CLOCKWISE
+		apply_movement_mode()
 	
-	# Forward key (up): move forward in current facing direction
+	# Forward key (up): forward movement
 	elif event.is_action_pressed("ui_up"):
-		add_to_input_queue("ui_up")
+		current_movement_mode = MovementMode.FORWARD
+		apply_movement_mode()
+
+func apply_movement_mode():
+	match current_movement_mode:
+		MovementMode.COUNTER_CLOCKWISE:
+			# Set counter-clockwise rotation
+			if current_state == State.MOVING:
+				# If moving, switch to rotating and set direction
+				current_state = State.ROTATING
+				setup_rotation_from_movement(-1.0)
+			elif rotation_direction != -1.0:
+				# If already rotating, transition to counter-clockwise
+				start_rotation_transition(-1.0)
+		
+		MovementMode.CLOCKWISE:
+			# Set clockwise rotation
+			if current_state == State.MOVING:
+				# If moving, switch to rotating and set direction
+				current_state = State.ROTATING
+				setup_rotation_from_movement(1.0)
+			elif rotation_direction != 1.0:
+				# If already rotating, transition to clockwise
+				start_rotation_transition(1.0)
+		
+		MovementMode.FORWARD:
+			# Switch to forward movement
+			if current_state == State.ROTATING or current_state == State.TRANSITIONING:
+				current_state = State.MOVING
+
+func setup_rotation_from_movement(new_direction: float):
+	# Set up rotation state when switching from movement to rotation
+	rotation_direction = new_direction
+	target_rotation_direction = new_direction
 	
-	# Remove released keys from queue
-	if event.is_action_released("ui_up"):
-		remove_from_input_queue("ui_up")
-	elif event.is_action_released("ui_left"):
-		remove_from_input_queue("ui_left")
-	elif event.is_action_released("ui_right"):
-		remove_from_input_queue("ui_right")
+	# Calculate rotation center from current position and facing direction
+	var perpendicular = Vector2(-facing_direction.y, facing_direction.x) * rotation_direction
+	rotation_center = global_position + perpendicular * ROTATION_RADIUS
+	rotation_angle = atan2(global_position.y - rotation_center.y, global_position.x - rotation_center.x)
 
-func add_to_input_queue(action: String):
-	# Remove if already in queue (move to front)
-	input_queue.erase(action)
-	# Add to front (most recent)
-	input_queue.push_front(action)
-	# Limit queue size
-	if input_queue.size() > max_input_queue_size:
-		input_queue.pop_back()
-
-func remove_from_input_queue(action: String):
-	input_queue.erase(action)
 
 func start_rotation_transition(new_direction: float):
 	# Start a smooth transition to a new rotation direction
@@ -270,50 +274,6 @@ func recalculate_rotation_center():
 	# Update rotation angle to match current position on new circle
 	rotation_angle = atan2(global_position.y - rotation_center.y, global_position.x - rotation_center.x)
 
-func get_priority_input_action() -> String:
-	# Return most recent input that's still held
-	for action in input_queue:
-		if Input.is_action_pressed(action):
-			return action
-	return ""
-
-func check_input():
-	# Get the current priority input
-	var current_input = get_priority_input_action()
-	
-	# Forward key (up): switch to moving state
-	if current_input == "ui_up":
-		if current_state == State.ROTATING:
-			# Switch to moving in the direction we're currently facing
-			current_state = State.MOVING
-		elif current_state == State.TRANSITIONING:
-			# Switch to moving state to pause transition
-			current_state = State.MOVING
-	
-	# Left/Right keys: handle rotation direction changes
-	elif current_input == "ui_left" or current_input == "ui_right":
-		# Don't switch to rotating if we're moving forward - just set the rotation direction
-		# This allows changing rotation direction while moving without affecting current movement
-		pass  # Rotation direction is already handled in _input()
-	
-	# No input: switch to rotating state from moving
-	elif current_input == "":
-		if current_state == State.MOVING:
-			# Switch to rotating state, use target rotation direction if it was changed while moving
-			rotation_direction = target_rotation_direction
-			current_state = State.ROTATING
-			
-			# COMPLETELY FRESH rotation setup - ignore any previous rotation_angle
-			# The facing direction should remain exactly as it was during movement
-			# Calculate where the rotation center should be so that we continue smoothly
-			var perpendicular = Vector2(-facing_direction.y, facing_direction.x) * rotation_direction
-			rotation_center = global_position + perpendicular * ROTATION_RADIUS
-			
-			# Calculate the angle for this position on the new circle
-			rotation_angle = atan2(global_position.y - rotation_center.y, global_position.x - rotation_center.x)
-			
-		
-		# If rotating or transitioning, continue in current state
 
 func get_current_state():
 	return current_state

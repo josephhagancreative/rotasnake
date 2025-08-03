@@ -63,5 +63,7 @@ func get_start_position() -> Vector2:
 	return global_position
 
 func get_facing_direction() -> Vector2:
-	print("SnakeStartPoint.get_facing_direction() returning: ", facing_direction.normalized())
-	return facing_direction.normalized()
+	# Apply the node's rotation to the facing direction
+	var rotated_direction = facing_direction.rotated(rotation)
+	print("SnakeStartPoint.get_facing_direction() - facing_direction: ", facing_direction, ", rotation: ", rotation, ", rotated: ", rotated_direction.normalized())
+	return rotated_direction.normalized()
