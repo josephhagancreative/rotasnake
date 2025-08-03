@@ -48,6 +48,7 @@ signal died()
 
 var tail_segment_scene = preload("res://TailSegment.tscn")
 var death_tween: Tween
+var death_audio_player: AudioStreamPlayer2D
 
 func _ready():
 	# Add to snake group for collision detection
@@ -100,6 +101,11 @@ func _ready():
 		head_shape.radius = 12.0  # Back to normal size for solid collision
 	
 	head_area.area_entered.connect(_on_head_area_entered)
+	
+	# Set up death audio player
+	death_audio_player = AudioStreamPlayer2D.new()
+	death_audio_player.stream = preload("res://assets/audio/death.wav")
+	add_child(death_audio_player)
 
 func _physics_process(delta):
 	# Update immunity timer
@@ -270,6 +276,10 @@ func get_current_state():
 
 func die():
 	# Called when snake hits something
+	
+	# Play death sound
+	death_audio_player.play()
+	
 	died.emit()
 	set_physics_process(false)  # Stop movement
 	

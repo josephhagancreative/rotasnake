@@ -6,6 +6,11 @@ var total_levels = 7  # Updated to reflect actual levels (1-7)
 var level_completed = false
 var awaiting_next_level = false
 
+# Background music
+var bgm_player: AudioStreamPlayer
+var normal_volume_db = 0.0
+var quiet_volume_db = -10.0
+
 # Collectible tracking
 var collectibles_per_level = 3
 var current_level_collectibles_collected = 0
@@ -44,6 +49,7 @@ func restart_current_level():
 	awaiting_next_level = false
 	level_completed = false
 	current_level_collectibles_collected = 0
+	restore_music_volume()
 	get_tree().reload_current_scene()
 
 func start_new_game():
@@ -76,6 +82,7 @@ func return_to_main_menu():
 	level_completed = false
 	awaiting_next_level = false
 	current_level_collectibles_collected = 0
+	restart_music()
 	get_tree().change_scene_to_file(main_menu_scene)
 
 func collect_collectible():
@@ -87,6 +94,15 @@ func get_collectible_progress() -> Array:
 
 func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	
+	# Set up background music
+	bgm_player = AudioStreamPlayer.new()
+	var music_stream = preload("res://assets/audio/bgm.mp3")
+	music_stream.loop = true
+	bgm_player.stream = music_stream
+	bgm_player.autoplay = true
+	bgm_player.volume_db = normal_volume_db
+	add_child(bgm_player)
 
 # Level statistics functions
 func record_level_completion(level_number: int, completion_time: float, collectibles_collected: int):
@@ -134,3 +150,16 @@ func get_game_completion_stats() -> Dictionary:
 			})
 	
 	return stats
+
+# Background music control
+func quiet_music():
+	var tween = create_tween()
+	tween.tween_property(bgm_player, "volume_db", quiet_volume_db, 0.3)
+
+func restore_music_volume():
+	var tween = create_tween()
+	tween.tween_property(bgm_player, "volume_db", normal_volume_db, 0.3)
+
+func restart_music():
+	bgm_player.stop()
+	bgm_player.play()

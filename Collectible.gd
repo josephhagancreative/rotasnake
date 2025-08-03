@@ -6,6 +6,7 @@ signal collected
 var is_collected: bool = false
 var original_position: Vector2
 var float_tween: Tween
+var audio_player: AudioStreamPlayer2D
 
 func _ready():
 	body_entered.connect(_on_body_entered)
@@ -16,6 +17,11 @@ func _ready():
 	
 	# Add to collectibles group for easy management
 	add_to_group("collectibles")
+	
+	# Set up audio player
+	audio_player = AudioStreamPlayer2D.new()
+	audio_player.stream = preload("res://assets/audio/chime.wav")
+	add_child(audio_player)
 	
 	# Store original position and start floating animation
 	original_position = position
@@ -38,6 +44,10 @@ func collect():
 		return
 		
 	is_collected = true
+	
+	# Play collection sound
+	audio_player.play()
+	
 	collected.emit()
 	
 	# Stop floating animation

@@ -125,6 +125,9 @@ func _on_snake_died():
 	# Stop timer on death
 	stop_level_timer()
 	
+	# Quiet the background music
+	GameManager.quiet_music()
+	
 	# Show death message with enhanced styling
 	hint_label.text = "YOU DIED!\nPress SPACE to restart"
 	hint_label.modulate = Color(1, 0.3, 0.3, 1.0)  # Red color for death
@@ -157,6 +160,9 @@ func _on_goal_reached(body):
 		
 		GameManager.complete_level()
 		snake_instance.set_physics_process(false)
+		
+		# Play goal completion sound
+		goal.play_completion_sound()
 		
 		# Visual feedback
 		goal.modulate = Color(0, 1, 0, 1)

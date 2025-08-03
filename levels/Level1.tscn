@@ -73,3 +73,15 @@ position = Vector2(538, 470)
 
 [node name="Collectible3" parent="." index="14" instance=ExtResource("5_collectible")]
 position = Vector2(757, 133)
+
+[node name="TimerUI" parent="UILayer" index="3"]
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LevelCompleteScreen" parent="UILayer" index="4"]
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GameCompleteScreen" parent="UILayer" index="5"]
+grow_horizontal = 2
+grow_vertical = 2
