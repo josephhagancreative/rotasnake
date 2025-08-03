@@ -2,24 +2,19 @@ extends Control
 class_name MainMenu
 
 @onready var title_label = $VBoxContainer/TitleLabel
-@onready var easy_mode_button = $VBoxContainer/NewGameButton
-@onready var hard_mode_button = $VBoxContainer/HardModeButton
+@onready var play_game_button = $VBoxContainer/NewGameButton
 @onready var quit_button = $VBoxContainer/QuitButton
 
 func _ready():
 	# Connect button signals
-	easy_mode_button.pressed.connect(_on_easy_mode_pressed)
-	hard_mode_button.pressed.connect(_on_hard_mode_pressed)
+	play_game_button.pressed.connect(_on_play_game_pressed)
 	quit_button.pressed.connect(_on_quit_pressed)
 	
-	# Focus the easy mode button by default
-	easy_mode_button.grab_focus()
+	# Focus the play game button by default
+	play_game_button.grab_focus()
 
-func _on_easy_mode_pressed():
+func _on_play_game_pressed():
 	GameManager.start_new_game()
-
-func _on_hard_mode_pressed():
-	GameManager.start_hard_mode()
 
 func _on_quit_pressed():
 	get_tree().quit()

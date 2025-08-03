@@ -59,12 +59,9 @@ func _ready():
 	# Initialize rotation direction variables
 	rotation_direction = 1.0  # Start clockwise
 	target_rotation_direction = 1.0
-	# Start with rotation in hard mode, forward movement otherwise
-	if GameManager.is_hard_mode:
-		current_movement_mode = MovementMode.CLOCKWISE
-		current_state = State.ROTATING
-	else:
-		current_movement_mode = MovementMode.FORWARD  # Start with forward movement
+	# Always start with rotation (hard mode behavior)
+	current_movement_mode = MovementMode.CLOCKWISE
+	current_state = State.ROTATING
 	
 	# Only do default setup if set_initial_facing_direction wasn't called
 	if not initial_setup_done:
@@ -207,11 +204,6 @@ func _input(event):
 	elif event.is_action_pressed("ui_right"):
 		current_movement_mode = MovementMode.CLOCKWISE
 		apply_movement_mode()
-	
-	# Forward key (up): forward movement (disabled in hard mode)
-	elif event.is_action_pressed("ui_up") and not GameManager.is_hard_mode:
-		current_movement_mode = MovementMode.FORWARD
-		apply_movement_mode()
 
 func apply_movement_mode():
 	match current_movement_mode:
@@ -234,11 +226,6 @@ func apply_movement_mode():
 			elif rotation_direction != 1.0:
 				# If already rotating, transition to clockwise
 				start_rotation_transition(1.0)
-		
-		MovementMode.FORWARD:
-			# Switch to forward movement
-			if current_state == State.ROTATING or current_state == State.TRANSITIONING:
-				current_state = State.MOVING
 
 func setup_rotation_from_movement(new_direction: float):
 	# Set up rotation state when switching from movement to rotation

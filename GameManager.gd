@@ -5,7 +5,6 @@ var current_level = 1
 var total_levels = 7  # Updated to reflect actual levels (1-7)
 var level_completed = false
 var awaiting_next_level = false
-var is_hard_mode = false
 
 # Collectible tracking
 var collectibles_per_level = 3
@@ -51,21 +50,6 @@ func start_new_game():
 	current_level = 1
 	level_completed = false
 	awaiting_next_level = false
-	is_hard_mode = false
-	current_level_collectibles_collected = 0
-	
-	# Reset game statistics
-	level_stats.clear()
-	game_start_time = 0.0
-	total_game_time = 0.0
-	
-	load_level(1)
-
-func start_hard_mode():
-	current_level = 1
-	level_completed = false
-	awaiting_next_level = false
-	is_hard_mode = true
 	current_level_collectibles_collected = 0
 	
 	# Reset game statistics
@@ -91,7 +75,6 @@ func return_to_main_menu():
 	current_level = 1
 	level_completed = false
 	awaiting_next_level = false
-	is_hard_mode = false
 	current_level_collectibles_collected = 0
 	get_tree().change_scene_to_file(main_menu_scene)
 

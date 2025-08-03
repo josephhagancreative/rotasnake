@@ -42,12 +42,7 @@ theme_override_constants/separation = 40
 [node name="NewGameButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "Easy Mode"
-
-[node name="HardModeButton" type="Button" parent="VBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-text = "Hard Mode"
+text = "Play Game"
 
 [node name="QuitButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
