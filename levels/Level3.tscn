@@ -9,6 +9,8 @@
 
 [node name="Level3" instance=ExtResource("2_baselevel")]
 script = ExtResource("1_gq8fh")
+level_name = "Level 3: Slithering Snake"
+level_hint = "Avoid the obstacles on the way to the goal"
 
 [node name="BackgroundTileMap" parent="." index="0"]
 format = 2

@@ -3,6 +3,7 @@ class_name BaseLevel
 
 @export var snake_start_position = Vector2(150, 300)
 @export var level_name = "Level"
+@export var level_hint = "Navigate to the goal!"
 
 @onready var walls_tilemap = $Walls
 @onready var goal = $Goal
@@ -16,8 +17,9 @@ var snake_instance
 var death_tween: Tween
 
 func _ready():
-	# Set level name
+	# Set level name and hint
 	level_label.text = level_name
+	hint_label.text = level_hint
 	
 	# Setup editor-placed elements
 	setup_editor_elements()
